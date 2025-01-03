@@ -33,7 +33,8 @@ function App() {
 
   const ProtectedRoute = ({ children }) => {
     // const isLoggedIn = useSelector((state) => state.auth.user == null);
-    const isLoggedIn = localStorage.getItem("token") == "";
+    const isLoggedIn = localStorage.getItem("token");
+    console.log(isLoggedIn);
 
     if (!isLoggedIn) {
       return <Navigate to="/login" replace />; // Redirect to login on unauthorized access
@@ -42,17 +43,17 @@ function App() {
     return children; // Render child component if logged in
   };
   const router = createBrowserRouter([
-    // {
-    //   path: "/login",
-    //   element: <Login />,
-    // },
+    {
+      path: "/login",
+      element: <Login />,
+    },
     {
       path: "/",
       element: (
-        // <ProtectedRoute>
-        //   <LandingPageLayout />
-        // </ProtectedRoute>
-        <LandingPageLayout />
+        <ProtectedRoute>
+          <LandingPageLayout />
+        </ProtectedRoute>
+        // <LandingPageLayout />
       ),
       children: [
         {

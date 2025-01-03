@@ -9,7 +9,14 @@ import {
   IconButton,
   Modal,
   Pagination,
+  Paper,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -22,7 +29,12 @@ import {
   createCategory,
   updateCategory,
 } from "../../../Components/db/Redux/api/ReduxSlice";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
+import { useThemeContext } from "../../../Components/db/Theme/ThemeContext";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 
+import { BASE_URL_Img } from "../../../Components/db/Redux/api/AxiosHelper";
 const Get = () => {
   const [id, setId] = useState("");
   const [show, setShow] = useState(null);
@@ -30,6 +42,9 @@ const Get = () => {
   const [data2, setData] = useState("");
   const [imageUpdate, setImageUpdate] = useState("");
   const [updateData, setUpdatedata] = useState("");
+
+  const { mode } = useThemeContext();
+
   const Image = (event) => {
     setImage(event.target.files[0]);
   };
@@ -37,16 +52,21 @@ const Get = () => {
     setImageUpdate(event.target.files[0]);
   };
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data.data.data);
+  const data = useSelector((state) => state.data.data);
   const status = useSelector((state) => state.data.status);
   const error = useSelector((state) => state.data.error);
   const meta = useSelector((state) => state.data.meta);
 
+  console.log(data);
+
+  // useEffect(() => {
+  //   if (status === "idle") {
+  //     dispatch(getCategory({ limit: meta.limit, page: meta.page }));
+  //   }
+  // }, [status, dispatch, meta.page, meta.limit]);
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(getCategory({ limit: meta.limit, page: meta.page }));
-    }
-  }, [status, dispatch, meta.page, meta.limit]);
+    dispatch(getCategory());
+  }, [dispatch]);
   const handleDelete = (id) => {
     dispatch(deleteCategory(id));
   };
@@ -78,6 +98,12 @@ const Get = () => {
     dispatch(getCategory({ limit: meta.limit, page: value }));
   };
   const handleClose = () => setShow(null);
+  const style2 = {
+    p: 0,
+    pl: 2,
+    fontFamily: "Montserrat",
+  };
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -93,7 +119,7 @@ const Get = () => {
   return (
     <>
       <Stack direction="row">
-        <Stack
+        {/* <Stack
           onSubmit={handleCreate}
           style={{
             width: "100%",
@@ -166,7 +192,7 @@ const Get = () => {
           >
             Create
           </Button>
-        </Stack>
+        </Stack> */}
       </Stack>
       {status === "loading..." ? (
         <Stack
@@ -181,8 +207,8 @@ const Get = () => {
       ) : status === "failed" ? (
         toast.error(error)
       ) : status === "succeeded" ? (
-        <Box>
-          <Stack m={2} alignItems="center">
+        <Box p={1.5}>
+          {/* <Stack m={2} alignItems="center">
             {meta.page && (
               <Pagination
                 count={meta.pageCount}
@@ -193,8 +219,8 @@ const Get = () => {
                 shape="rounded"
               />
             )}
-          </Stack>
-          <Stack
+          </Stack> */}
+          {/* <Stack
             direction="row"
             alignItems="center"
             p="0 20px"
@@ -229,7 +255,7 @@ const Get = () => {
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                      {category.name}
+                      {category.nameTm}
                     </Typography>
                   </CardContent>
                   <Stack direction="row" spacing={2}>
@@ -366,7 +392,104 @@ const Get = () => {
                 </CardActionArea>
               ))
             )}
-          </Stack>
+          </Stack> */}
+
+          <TableContainer
+            sx={{
+              ...(mode === "dark"
+                ? { background: "#0D1117" }
+                : { background: "#F3F2F7" }),
+            }}
+            component={Paper}
+          >
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>№</TableCell>
+                  <TableCell>Suraty</TableCell>
+                  <TableCell>Ady (TM)</TableCell>
+                  <TableCell>Ady (RU)</TableCell>
+                  <TableCell>Ady (EN)</TableCell>
+                  <TableCell>Aktiw</TableCell>
+                  <TableCell>Hereketler</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.map((category, index) => (
+                  <TableRow key={category.id}>
+                    <TableCell sx={style2}>{index + 1}</TableCell>
+                    <TableCell sx={style2}>
+                      {category.image ? (
+                        <div
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            overflow: "hidden",
+                            ...(mode == "dark"
+                              ? { background: "#23272F" }
+                              : { background: "#fff" }),
+                          }}
+                        >
+                          <img
+                            src={`${BASE_URL_Img}/images/${category.image}`}
+                            alt="image of category"
+                            style={{
+                              maxWidth: "100%",
+                              maxHeight: "100%",
+                              objectFit: "contain",
+                            }}
+                            crossOrigin="anonymous"
+                          />
+                        </div>
+                      ) : (
+                        <Stack height={50} justifyContent="center">
+                          <Typography color="gray" textAlign="start">
+                            Surady ýok
+                          </Typography>
+                        </Stack>
+                      )}
+                    </TableCell>
+                    <TableCell sx={style2}>{category.nameTm}</TableCell>
+                    <TableCell sx={style2}>{category.nameRu}</TableCell>
+                    <TableCell sx={style2}>{category.nameEn}</TableCell>
+                    <TableCell sx={style2}>
+                      {category.isActive ? "Hawa" : "Ýok"}
+                    </TableCell>
+                    <TableCell sx={style2}>
+                      <IconButton
+                        onClick={() => {
+                          handleOpen(category.id);
+                          setId(category.id);
+                        }}
+                        sx={{ backgroundColor: "inherit", color: "#fff" }}
+                      >
+                        <BorderColorOutlinedIcon
+                          sx={{
+                            color: "#00B69B",
+                            width: 20,
+                            height: 20,
+                          }}
+                        />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDelete(category.id)}
+                        sx={{ backgroundColor: "inherit", color: "#fff" }}
+                      >
+                        <img
+                          style={{ width: 20, height: 20 }}
+                          src="/images/Delete.png"
+                          alt=""
+                        />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       ) : (
         ""

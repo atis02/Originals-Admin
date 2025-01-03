@@ -3,7 +3,7 @@ import React from "react";
 
 const index = () => {
   return (
-    <Box>
+    <Box height="100vh" overflow="auto" width="100%">
       <Typography
         p="10px 20px"
         fontSize={{ lg: "30px", md: "30px", sm: "25px", xs: "20px" }}

@@ -79,7 +79,7 @@ const Home = ({ ...props }) => {
     return setDocument(sortedData);
   };
   return (
-    <Box height="100vh" overflow="scroll" width="100%">
+    <Box height="100vh" overflow="auto" width="100%">
       <Stack p="20px">
         <Typography
           fontSize={{ lg: "30px", md: "30px", sm: "25px", xs: "20px" }}
@@ -89,7 +89,7 @@ const Home = ({ ...props }) => {
           Dolandyryş Paneli
         </Typography>
         <Divider />
-        
+
         <Stack
           direction={{ lg: "row", md: "row", sm: "row", xs: "column" }}
           alignItems="center"

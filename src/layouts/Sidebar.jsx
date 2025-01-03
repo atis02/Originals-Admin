@@ -35,6 +35,8 @@ import Diversity3Icon from "@mui/icons-material/Diversity3";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import CategoryIcon from "@mui/icons-material/Category";
 import GroupIcon from "@mui/icons-material/Group";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import SmsIcon from "@mui/icons-material/Sms";
 import { dbDoc } from "../Components/db/dbDocuments.mjs";
@@ -42,16 +44,28 @@ import axios from "axios";
 import { logout } from "../Components/db/Redux/reducers/ReduxSlice";
 import { ToastContainer, toast } from "react-toastify";
 import { getAuthors } from "../Components/db/Redux/api/AuthorSlice";
+import { useThemeContext } from "../Components/db/Theme/ThemeContext";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export default function SidebarNav() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() =>
+    JSON.parse(localStorage.getItem("sidebarOpen"))
+  );
+  const { mode, toggleMode } = useThemeContext();
+  console.log(open);
 
   const handleOpen = () => {
-    setOpen(!open);
+    setOpen(true);
+    localStorage.setItem("sidebarOpen", true);
   };
+  const handleClose = () => {
+    setOpen(false);
+    localStorage.setItem("sidebarOpen", false);
+  };
+  const navigate = useNavigate();
   // const stateDocs = useSelector((state) => state.sendedDocs);
   // const DeletedDocs = JSON.parse(localStorage.getItem("deletedDocs")) || [];
-  // const navigate = useNavigate();
   // const isLoggedIn = useSelector((state) => state.auth.user);
 
   // const Logout = async () => {
@@ -68,9 +82,12 @@ export default function SidebarNav() {
   // };
   // const dispatch = useDispatch();
 
-  // const handleLogout = () => {
-  //   dispatch(logout()); // Dispatch the logout action
-  // };
+  const Logout = () => {
+    localStorage.removeItem("token");
+    setTimeout(() => navigate("/login"), 1000);
+
+    toast.success("Üstünlikli!");
+  };
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   return (
@@ -78,12 +95,18 @@ export default function SidebarNav() {
       <Sidebar
         rootStyles={{
           [`.${sidebarClasses.container}`]: {
-            backgroundColor: "#0B57D0",
-            color: "#F3F3F4",
+            // backgroundColor: "#010409",
+            // color: "#F3F3F4",
+            backgroundColor: mode === "dark" ? "#0D1117" : "#F3F2F7",
+            color: mode === "dark" ? "#ffffff" : "#000000",
             maxHeight: "100vh",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            borderRight:
+              mode === "dark"
+                ? "1px solid rgb(85, 85, 85)"
+                : "1px solid lightgray",
           },
         }}
         className="sidebar"
@@ -113,38 +136,72 @@ export default function SidebarNav() {
             m="20px 30px"
           >
             <Link style={{ textDecoration: "none" }} to="/">
-              <ToastContainer />
+              {/* <ToastContainer /> */}
               <Typography
-                color="#F3F3F4"
+                color={mode === "dark" ? "#ffffff" : "#000000"}
                 fontWeight="700"
-                sx={{ ...(open ? { fontSize: "30px" } : { fontSize: "18px" }) }}
+                sx={{ ...(open ? { fontSize: "20px" } : { fontSize: "16px" }) }}
                 textAlign="center"
                 fontFamily="Montserrat"
               >
-                Aydaly Admin
+                Originals Admin
               </Typography>
             </Link>
-            <IconButton
-              sx={{
-                color: "#F3F3F4",
-                ...(open
-                  ? ""
-                  : {
-                      width: "30px",
-                      height: "30px",
-                      backgroundColor: "#5C9FE3",
-                    }),
-              }}
-              onClick={handleOpen}
-            >
-              {" "}
-              <MenuOpenIcon />
-            </IconButton>
+            {open ? (
+              <IconButton
+                color="inherit"
+                sx={{
+                  // color: "#F3F3F4",
+                  ...(open
+                    ? ""
+                    : {
+                        width: "30px",
+                        height: "30px",
+                        backgroundColor:
+                          mode === "dark" ? "#0D1117" : "#F3F2F7",
+                      }),
+                }}
+                onClick={handleClose}
+              >
+                {" "}
+                <ClearIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                color="inherit"
+                sx={{
+                  // color: "#F3F3F4",
+                  ...(open
+                    ? ""
+                    : {
+                        width: "30px",
+                        height: "30px",
+                        backgroundColor:
+                          mode === "dark" ? "#0D1117" : "#F3F2F7",
+                      }),
+                }}
+                onClick={handleOpen}
+              >
+                {" "}
+                <MenuOpenIcon />
+              </IconButton>
+            )}
           </Stack>
           <Menu
             menuItemStyles={{
               button: {
-                "&:hover": { backgroundColor: "#1976d2" },
+                // ...(open ? { margin: "5px" } : { margin: "0" }),
+
+                margin: "5px",
+                backgroundColor: mode === "dark" ? "#0D1117" : "#F3F2F7",
+                "&:hover": {
+                  // backgroundColor: "#2c2c2c",
+                  backgroundColor: mode === "dark" ? "#2c2c2c" : "#F8F9FA",
+                  borderRadius: "7px",
+                  // ...(open ? { margin: "3px" } : { margin: "0" }),
+                  margin: "5px",
+                  color: mode === "dark" ? "#ffffff" : "#0D1117",
+                },
               },
             }}
           >
@@ -160,19 +217,21 @@ export default function SidebarNav() {
             >
               {open ? "Dolandyryş" : ""}
             </MenuItem>
-            <MenuItem
-              component={<NavLink className="sideNav" to="/authors" />}
-              icon={<GroupIcon />}
-            >
-              {open ? "Awtorlar" : ""}
-            </MenuItem>
+
             <MenuItem
               component={<NavLink className="sideNav" to="/category" />}
               icon={<CategoryIcon />}
             >
               {open ? "Kategoriýa" : ""}
             </MenuItem>
-            <MenuItem
+            {/*
+              <MenuItem
+              component={<NavLink className="sideNav" to="/authors" />}
+              icon={<GroupIcon />}
+            >
+              {open ? "Awtorlar" : ""}
+            </MenuItem>
+             <MenuItem
               component={<NavLink className="sideNav" to="/sms" />}
               icon={<SmsIcon />}
             >
@@ -195,7 +254,7 @@ export default function SidebarNav() {
               icon={<CardGiftcardIcon />}
             >
               {open ? "Abuna" : ""}
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem
               component={<NavLink className="sideNav" to="/account" />}
               icon={<AccountCircleIcon />}
@@ -204,10 +263,36 @@ export default function SidebarNav() {
             </MenuItem>
           </Menu>
         </Stack>
-        <Stack>
-          <Button
+
+        <Stack
+          direction={open ? "row" : "column"}
+          alignItems="center"
+          justifyContent="space-evenly"
+          mb={2}
+          spacing={1}
+        >
+          {/* <Stack>
+          
+        </Stack> */}
+          <IconButton
+            onClick={toggleMode}
             sx={{
-              color: "#fff",
+              border:
+                mode === "dark"
+                  ? "1px solid rgb(85, 85, 85)"
+                  : "1px solid gray",
+            }}
+            color="inherit"
+          >
+            {mode === "dark" ? (
+              <LightModeIcon sx={{ width: 25, height: 25 }} />
+            ) : (
+              <DarkModeIcon sx={{ width: 25, height: 25 }} />
+            )}
+          </IconButton>
+          {/* <IconButton
+            color="inherit"
+            sx={{
               display: "flex",
               flexDirection: "column",
               gap: "1px",
@@ -215,22 +300,23 @@ export default function SidebarNav() {
               fontFamily: "Montserrat",
             }}
           >
-            <HelpOutlineIcon sx={{ width: 30, height: 30 }} />
+            <HelpOutlineIcon sx={{ width: 25, height: 25 }} />
             Kömek
-          </Button>
-          <Button
-            // onClick={Logout}
+          </IconButton> */}
+          <IconButton
+            onClick={Logout}
+            color="inherit"
             sx={{
-              color: "#fff",
               display: "flex",
               flexDirection: "column",
               fontFamily: "Montserrat",
               fontSize: "11px",
             }}
           >
-            <PowerSettingsNewIcon sx={{ width: 30, height: 30 }} />
-            Çykmak
-          </Button>
+            <LogoutIcon sx={{ width: 25, height: 25 }} />
+
+            {/* Çykmak */}
+          </IconButton>
         </Stack>
       </Sidebar>
     </>

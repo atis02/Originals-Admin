@@ -4,9 +4,12 @@ import App from "./App.jsx";
 import "./index.css";
 import { Provider } from "react-redux";
 import { store } from "./Components/db/Redux/api/store.js";
+import { ThemeProviderWrapper } from "./Components/db/Theme/ThemeContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <App />
-  </Provider>
+  <ThemeProviderWrapper>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </ThemeProviderWrapper>
 );

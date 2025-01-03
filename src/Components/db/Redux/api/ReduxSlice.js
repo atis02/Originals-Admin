@@ -5,23 +5,23 @@ import { toast } from "react-toastify";
 const initialState = {
   data: [],
   status: "idle",
-  meta: {
-    limit: 20,
-    itemCount: 0,
-    pageCount: 1,
-    page: 1,
-    hasPrevPage: false,
-    hasNextPage: false,
-  },
+  // meta: {
+  //   limit: 20,
+  //   itemCount: 0,
+  //   pageCount: 1,
+  //   page: 1,
+  //   hasPrevPage: false,
+  //   hasNextPage: false,
+  // },
   error: null,
   loading: false,
 };
 // Create an async thunk for the GET request
 export const getCategory = createAsyncThunk(
   "getCategory",
-  async ({ limit, page }) => {
+  async () => {
     const response = await AxiosInstance.get(
-      `/categories?limit=${limit}&page=${page}`
+      `/category/all`
     );
     return response.data;
   }

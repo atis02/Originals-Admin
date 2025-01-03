@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { store } from "../../Components/db/Redux/api/store";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import {
   MenuItem,
@@ -52,10 +52,12 @@ import HomeIcon from "@mui/icons-material/Home";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
-
 import axios from "axios";
 import { logout } from "../../Components/db/Redux/reducers/ReduxSlice";
 import menuItems from "./components/menuItems";
+import { useThemeContext } from "../../Components/db/Theme/ThemeContext";
+import NavbarBtns from "../NextPrevBtns";
+
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -65,6 +67,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(false);
   const opening = Boolean(anchorEl);
+  const { mode } = useThemeContext();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -126,15 +129,24 @@ export default function Navbar() {
     <Box
       height="65px"
       width="100%"
-      backgroundColor="#0B57D0"
-      boxShadow="0px 1px 8px #999"
+      // backgroundColor="#0B57D0"
+      boxShadow={
+        mode === "dark"
+          ? "0px 1px 0.5px rgb(85, 85, 85)"
+          : "0px 1px 0.5px lightgray"
+      }
       sx={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        backgroundColor: mode === "dark" ? "#0D1117" : "#F3F2F7",
+        color: mode === "dark" ? "#ffffff" : "#000000",
       }}
     >
-      <TextField
+      <Stack>
+        <NavbarBtns />
+      </Stack>
+      {/* <TextField
         id="input-with-icon-textfield"
         placeholder="Gözleg"
         fullWidth
@@ -149,7 +161,8 @@ export default function Navbar() {
                 minWidth: "25px",
                 minHeight: "25px",
                 "&:hover": {
-                  backgroundColor: "#0B57D0",
+                  backgroundColor:
+                    mode === "dark" ? " rgb(85, 85, 85)" : "lightgray",
                   color: "#fff",
                 },
                 color: "#000",
@@ -173,16 +186,17 @@ export default function Navbar() {
           sx: {
             transition: "all ease-in-out 0.2s",
             borderRadius: "35px",
-            backgroundColor: "#fff",
+            // backgroundColor: "#fff",
+            backgroundColor: mode === "dark" ? " #1E2128" : "lightgray",
             height: "35px",
-            color: "#000",
+            color: mode === "dark" ? " #fff" : "#000",
             fontWeight: "600",
             outline: "none",
             boxShadow: "none",
           },
         }}
         variant="outlined"
-      />
+      /> */}
       {/* <Stack
         direction="row"
         onClick={() => setOpenCalendar(true)}
@@ -278,7 +292,7 @@ export default function Navbar() {
         justifyContent="center"
         pr={{ lg: "30px", md: "30px", sm: "30px", xs: "10px" }}
       >
-        <Stack
+        {/* <Stack
           direction="row"
           sx={{ display: { lg: "flex", md: "flex", sm: "flex", xs: "none" } }}
           alignItems="center"
@@ -326,7 +340,7 @@ export default function Navbar() {
               Sazlamalar ýerinde
             </Stack>
           </Backdrop>
-        </Stack>
+        </Stack> */}
 
         <Link
           to="/account"
@@ -346,7 +360,7 @@ export default function Navbar() {
             <Avatar src="/broken-image.jpg" sx={{ background: "blue" }} />
           </IconButton>
           <Typography
-            color="#fff"
+            color={mode === "dark" ? "#ffffff" : "#000000"}
             fontFamily="Montserrat"
             sx={{ display: { lg: "flex", md: "flex", sm: "flex", xs: "none" } }}
             fontWeight={600}
@@ -423,7 +437,6 @@ export default function Navbar() {
                     m="0px 30px"
                   >
                     <Link style={{ textDecoration: "none" }} to="/">
-                      <ToastContainer />
                       <Typography
                         color="#F3F3F4"
                         fontWeight="700"
