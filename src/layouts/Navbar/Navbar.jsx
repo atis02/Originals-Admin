@@ -357,12 +357,21 @@ export default function Navbar() {
               "&:hover": { backgroundColor: "#424242" },
             }}
           >
-            <Avatar src="/broken-image.jpg" sx={{ background: "blue" }} />
+            <Avatar src="/broken-image.jpg" sx={{ background: "#00B69B" }} />
           </IconButton>
           <Typography
-            color={mode === "dark" ? "#ffffff" : "#000000"}
+            // color={mode === "dark" ? "#ffffff" : "#000000"}
+
             fontFamily="Montserrat"
-            sx={{ display: { lg: "flex", md: "flex", sm: "flex", xs: "none" } }}
+            sx={{
+              display: {
+                lg: "flex",
+                md: "flex",
+                sm: "flex",
+                xs: "none",
+                ...(mode == "dark" ? { color: "#fff" } : { color: "#474747" }),
+              },
+            }}
             fontWeight={600}
           >
             {/* {admin.user.email.toUpperCase()} */}

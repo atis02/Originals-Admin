@@ -3,6 +3,7 @@ import { Button, Stack } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { useThemeContext } from "../Components/db/Theme/ThemeContext";
 const NavbarBtns = () => {
   const handleBack = () => {
     window.history.back();
@@ -11,6 +12,7 @@ const NavbarBtns = () => {
   const handleNext = () => {
     window.history.forward();
   };
+  const { mode } = useThemeContext();
 
   return (
     <Stack
@@ -23,7 +25,13 @@ const NavbarBtns = () => {
     >
       <Button
         onClick={handleBack}
-        sx={{ minWidth: 45, height: 35, p: 0, color: "inherit" }}
+        sx={{
+          minWidth: 45,
+          height: 35,
+          p: 0,
+          color: "inherit",
+          ...(mode == "dark" ? { color: "inherit" } : { color: "#474747" }),
+        }}
         variant="outlined"
         // color="primary"
       >
@@ -31,7 +39,13 @@ const NavbarBtns = () => {
       </Button>
       <Button
         onClick={handleNext}
-        sx={{ minWidth: 45, height: 35, p: 0, color: "inherit" }}
+        sx={{
+          minWidth: 45,
+          height: 35,
+          p: 0,
+          color: "inherit",
+          ...(mode == "dark" ? { color: "inherit" } : { color: "#474747" }),
+        }}
         variant="outlined"
         // color="primary"
       >

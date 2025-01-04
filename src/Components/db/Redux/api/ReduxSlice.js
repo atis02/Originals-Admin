@@ -26,23 +26,44 @@ export const getCategory = createAsyncThunk(
     return response.data;
   }
 );
-export const deleteCategory = createAsyncThunk("deleteCategory", async (id) => {
-  await AxiosInstance.delete(`/categories/${id}`);
-  const response = await AxiosInstance.get("/categories");
-  response.data.data.filter((item) => item.id !== id);
-  response.status === 200
-    ? toast.success("Deleted Successfully")
-    : toast.success("Error");
+export const deleteCategory = createAsyncThunk("deleteCategory", async (body) => {
+ try {
+  console.log(body);
+  
+  const resp = await AxiosInstance.delete(`/category/remove?id=${body.id}`);
+  console.log(resp.data);
+  
+  if(resp.data.message ==='Üstünlikli!'){
 
-  return response.data;
+    const response = await AxiosInstance.get("/category/all");
+    toast.success("Üstünlikli!")
+    
+    return response.data;
+  }else{
+    toast.error("Ýalňyşlyk!");
+
+  }
+ } catch (error) {
+  toast.error(error.data);
+  
+ }
 });
 export const createCategory = createAsyncThunk(
   "createCategory",
   async (body) => {
-    const resp = await AxiosInstance.post("/categories", body);
-    resp.status == 201 ? toast.success(resp.statusText) : toast.warn("Error");
-    const response = await AxiosInstance.get("/categories");
-    return response.data;
+    try {
+      const resp = await AxiosInstance.post("/category/add", body);
+      if(resp.data.message === 'Kategoriýa döredildi!'){
+        toast.success("Üstünlikli!");
+        const response = await AxiosInstance.get("/category/all");
+        return response.data;
+      }else{
+        toast.error("Ýalňyşlyk!");
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+   
   }
 );
 export const updateCategory = createAsyncThunk(

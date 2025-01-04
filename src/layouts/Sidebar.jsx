@@ -98,7 +98,7 @@ export default function SidebarNav() {
             // backgroundColor: "#010409",
             // color: "#F3F3F4",
             backgroundColor: mode === "dark" ? "#0D1117" : "#F3F2F7",
-            color: mode === "dark" ? "#ffffff" : "#000000",
+            color: mode === "dark" ? "#ffffff" : "#474747",
             maxHeight: "100vh",
             display: "flex",
             flexDirection: "column",
@@ -138,7 +138,7 @@ export default function SidebarNav() {
             <Link style={{ textDecoration: "none" }} to="/">
               {/* <ToastContainer /> */}
               <Typography
-                color={mode === "dark" ? "#ffffff" : "#000000"}
+                color={mode === "dark" ? "#ffffff" : "#474747"}
                 fontWeight="700"
                 sx={{ ...(open ? { fontSize: "20px" } : { fontSize: "16px" }) }}
                 textAlign="center"

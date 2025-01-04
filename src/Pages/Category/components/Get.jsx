@@ -35,6 +35,7 @@ import { useThemeContext } from "../../../Components/db/Theme/ThemeContext";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 
 import { BASE_URL_Img } from "../../../Components/db/Redux/api/AxiosHelper";
+
 const Get = () => {
   const [id, setId] = useState("");
   const [show, setShow] = useState(null);
@@ -67,13 +68,15 @@ const Get = () => {
   useEffect(() => {
     dispatch(getCategory());
   }, [dispatch]);
-  const handleDelete = (id) => {
-    dispatch(deleteCategory(id));
+
+  const handleDelete = (category_id) => {
+    const body = { id: category_id };
+    dispatch(deleteCategory(body));
   };
   const handleCreate = () => {
     const body = new FormData();
-    body.append("icon", image);
-    body.append("name", data2);
+    body.append("image", image);
+    body.append("nameTm", data2);
     dispatch(createCategory(body));
     setData("");
   };
@@ -199,7 +202,7 @@ const Get = () => {
           direction="column"
           height="100%"
           alignItems="center"
-          sx={{ gap: "10px", mt: "20px" }}
+          sx={{ gap: "10px" }}
         >
           <CircularProgress />
           Loading...
@@ -207,193 +210,7 @@ const Get = () => {
       ) : status === "failed" ? (
         toast.error(error)
       ) : status === "succeeded" ? (
-        <Box p={1.5}>
-          {/* <Stack m={2} alignItems="center">
-            {meta.page && (
-              <Pagination
-                count={meta.pageCount}
-                page={meta.page}
-                onChange={handleChangePagination}
-                variant="outlined"
-                color="primary"
-                shape="rounded"
-              />
-            )}
-          </Stack> */}
-          {/* <Stack
-            direction="row"
-            alignItems="center"
-            p="0 20px"
-            gap={2}
-            flexWrap="wrap"
-            justifyContent="center"
-            mt={2}
-          >
-            {data.length == 0 ? (
-              <Typography>No Data!</Typography>
-            ) : (
-              data.map((category) => (
-                <CardActionArea
-                  key={category.id}
-                  sx={{
-                    width: "250px",
-                    p: "10px",
-                    color: "#fff",
-                    backgroundColor: "#1E1E1E",
-                    borderRadius: "10px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <CardMedia
-                    sx={{ height: "200px", width: "220px" }}
-                    image={category.icon}
-                    title="green iguana"
-                    style={{ borderRadius: "10px" }}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {category.nameTm}
-                    </Typography>
-                  </CardContent>
-                  <Stack direction="row" spacing={2}>
-                    <Button
-                      onClick={() => {
-                        handleDelete(category.id);
-                      }}
-                      sx={{
-                        backgroundColor: "red",
-                        color: "#fff",
-                        width: "100px",
-                        height: "40px",
-                        mb: "20px",
-                      }}
-                    >
-                      delete
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        handleOpen(category.id);
-                        setId(category.id);
-                      }}
-                      sx={{
-                        backgroundColor: "blue",
-                        color: "#fff",
-                        width: "100px",
-                        height: "40px",
-                        mb: "20px",
-                      }}
-                    >
-                      update
-                    </Button>
-                    {show == category.id && (
-                      <Modal
-                        open={show !== null}
-                        onClose={handleClose}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                      >
-                        <Box sx={style}>
-                          <Stack alignItems="end" width="100%" mt={-2}>
-                            <IconButton
-                              sx={{ fontWeight: 600, fontSize: 20 }}
-                              onClick={handleClose}
-                            >
-                              X
-                            </IconButton>
-                          </Stack>
-                          <form
-                            onSubmit={handleUpdate}
-                            style={{
-                              display: "flex",
-                              width: "100%",
-                              height: "100%",
-                              gap: "20px",
-                              backgroundColor: "lightgray ",
-                              borderRadius: "20px",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              flexDirection: "column",
-                              padding: "10px",
-                            }}
-                          >
-                            <Stack
-                              direction="row"
-                              width="100%"
-                              alignItems="center"
-                              justifyContent="center"
-                              spacing={2}
-                            >
-                              <Typography color="#000" fontSize={25}>
-                                Updating Category name:
-                              </Typography>
-                              <Typography
-                                fontSize={25}
-                                color="#fff"
-                                backgroundColor={
-                                  category.name === "" ? "transparent" : "brown"
-                                }
-                              >
-                                {category.name === ""
-                                  ? "No title"
-                                  : category.name}
-                              </Typography>
-                            </Stack>
-                            <Stack
-                              direction="column"
-                              width="100%"
-                              alignItems="center"
-                              spacing={2}
-                            >
-                              <TextField
-                                id="input-with-icon-textfield"
-                                placeholder="New Category title"
-                                name="title"
-                                sx={{ width: "90%" }}
-                                value={updateData}
-                                onChange={(e) => setUpdatedata(e.target.value)}
-                                InputProps={{
-                                  sx: {
-                                    borderRadius: "35px",
-                                    backgroundColor: "#333",
-                                    border: "1px solid  #00997B",
-                                    fontSize: "20px",
-                                    fontWeight: "500",
-                                    color: "#fff",
-                                  },
-                                }}
-                                variant="outlined"
-                              />
-                              <input
-                                type="file"
-                                name="image"
-                                onChange={UpdateImage}
-                              />
-                            </Stack>
-
-                            <Button
-                              onClick={handleUpdate}
-                              sx={{
-                                backgroundColor: "green",
-                                color: "#fff",
-                                width: "100px",
-                                height: "50px",
-                              }}
-                            >
-                              Update
-                            </Button>
-                          </form>
-                        </Box>
-                      </Modal>
-                    )}
-                  </Stack>
-                </CardActionArea>
-              ))
-            )}
-          </Stack> */}
-
+        <Box p={1.5} pt={0}>
           <TableContainer
             sx={{
               ...(mode === "dark"
@@ -406,7 +223,7 @@ const Get = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>№</TableCell>
-                  <TableCell>Suraty</TableCell>
+                  <TableCell>Surady</TableCell>
                   <TableCell>Ady (TM)</TableCell>
                   <TableCell>Ady (RU)</TableCell>
                   <TableCell>Ady (EN)</TableCell>
@@ -415,78 +232,82 @@ const Get = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.map((category, index) => (
-                  <TableRow key={category.id}>
-                    <TableCell sx={style2}>{index + 1}</TableCell>
-                    <TableCell sx={style2}>
-                      {category.image ? (
-                        <div
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            overflow: "hidden",
-                            ...(mode == "dark"
-                              ? { background: "#23272F" }
-                              : { background: "#fff" }),
+                {data.length == 0 ? (
+                  <Typography>Kategoriýa ýok!</Typography>
+                ) : (
+                  data.map((category, index) => (
+                    <TableRow key={category.id}>
+                      <TableCell sx={style2}>{index + 1}</TableCell>
+                      <TableCell sx={style2}>
+                        {category.image ? (
+                          <div
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              overflow: "hidden",
+                              ...(mode == "dark"
+                                ? { background: "#23272F" }
+                                : { background: "#fff" }),
+                            }}
+                          >
+                            <img
+                              src={`${BASE_URL_Img}/images/${category.image}`}
+                              alt="image of category"
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "100%",
+                                objectFit: "contain",
+                              }}
+                              crossOrigin="anonymous"
+                            />
+                          </div>
+                        ) : (
+                          <Stack height={50} justifyContent="center">
+                            <Typography pl={1} color="gray" textAlign="start">
+                              ýok
+                            </Typography>
+                          </Stack>
+                        )}
+                      </TableCell>
+                      <TableCell sx={style2}>{category.nameTm}</TableCell>
+                      <TableCell sx={style2}>{category.nameRu}</TableCell>
+                      <TableCell sx={style2}>{category.nameEn}</TableCell>
+                      <TableCell sx={style2}>
+                        {category.isActive ? "Hawa" : "Ýok"}
+                      </TableCell>
+                      <TableCell sx={style2}>
+                        <IconButton
+                          onClick={() => {
+                            handleOpen(category.id);
+                            setId(category.id);
                           }}
+                          sx={{ backgroundColor: "inherit", color: "#fff" }}
+                        >
+                          <BorderColorOutlinedIcon
+                            sx={{
+                              color: "#00B69B",
+                              width: 20,
+                              height: 20,
+                            }}
+                          />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleDelete(category.id)}
+                          sx={{ backgroundColor: "inherit", color: "#fff" }}
                         >
                           <img
-                            src={`${BASE_URL_Img}/images/${category.image}`}
-                            alt="image of category"
-                            style={{
-                              maxWidth: "100%",
-                              maxHeight: "100%",
-                              objectFit: "contain",
-                            }}
-                            crossOrigin="anonymous"
+                            style={{ width: 20, height: 20 }}
+                            src="/images/Delete.png"
+                            alt=""
                           />
-                        </div>
-                      ) : (
-                        <Stack height={50} justifyContent="center">
-                          <Typography color="gray" textAlign="start">
-                            Surady ýok
-                          </Typography>
-                        </Stack>
-                      )}
-                    </TableCell>
-                    <TableCell sx={style2}>{category.nameTm}</TableCell>
-                    <TableCell sx={style2}>{category.nameRu}</TableCell>
-                    <TableCell sx={style2}>{category.nameEn}</TableCell>
-                    <TableCell sx={style2}>
-                      {category.isActive ? "Hawa" : "Ýok"}
-                    </TableCell>
-                    <TableCell sx={style2}>
-                      <IconButton
-                        onClick={() => {
-                          handleOpen(category.id);
-                          setId(category.id);
-                        }}
-                        sx={{ backgroundColor: "inherit", color: "#fff" }}
-                      >
-                        <BorderColorOutlinedIcon
-                          sx={{
-                            color: "#00B69B",
-                            width: 20,
-                            height: 20,
-                          }}
-                        />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDelete(category.id)}
-                        sx={{ backgroundColor: "inherit", color: "#fff" }}
-                      >
-                        <img
-                          style={{ width: 20, height: 20 }}
-                          src="/images/Delete.png"
-                          alt=""
-                        />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableContainer>
