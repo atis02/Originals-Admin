@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Get from "./components/Get";
 import AddIcon from "@mui/icons-material/Add";
 import { useThemeContext } from "../../Components/db/Theme/ThemeContext";
-import CreateCategoryModal from "./components/CreateCategoryModal";
+import CreateCategoryModal from "./components/CreateSubCategoryModal";
 const index = () => {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +30,7 @@ const index = () => {
             ...(mode == "dark" ? { color: "inherit" } : { color: "#474747" }),
           }}
         >
-          Kategoriýalar
+          Subkategoriýalar
         </Typography>
         <Stack width="65%">
           <TextField
@@ -84,7 +84,7 @@ const index = () => {
           // color="primary"
         >
           <AddIcon sx={{ width: 20, height: 20, mr: 0.5 }} />
-          Täze Kategoriýa
+          Täze Subkategoriýa
         </Button>
       </Stack>
       <Get searchTerm={searchTerm} />

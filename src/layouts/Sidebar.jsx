@@ -16,13 +16,7 @@ import {
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HomeIcon from "@mui/icons-material/Home";
-import {
-  MenuItem,
-  Menu,
-  Sidebar,
-  SubMenu,
-  sidebarClasses,
-} from "react-pro-sidebar";
+import { MenuItem, Menu, Sidebar, sidebarClasses } from "react-pro-sidebar";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,10 +37,10 @@ import { dbDoc } from "../Components/db/dbDocuments.mjs";
 import axios from "axios";
 import { logout } from "../Components/db/Redux/reducers/ReduxSlice";
 import { ToastContainer, toast } from "react-toastify";
-import { getAuthors } from "../Components/db/Redux/api/AuthorSlice";
 import { useThemeContext } from "../Components/db/Theme/ThemeContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ClearIcon from "@mui/icons-material/Clear";
+import WidgetsIcon from "@mui/icons-material/Widgets";
 
 export default function SidebarNav() {
   const [open, setOpen] = useState(() =>
@@ -224,14 +218,14 @@ export default function SidebarNav() {
             >
               {open ? "Kategoriýa" : ""}
             </MenuItem>
-            {/*
-              <MenuItem
-              component={<NavLink className="sideNav" to="/authors" />}
-              icon={<GroupIcon />}
+
+            <MenuItem
+              component={<NavLink className="sideNav" to="/subcategory" />}
+              icon={<WidgetsIcon />}
             >
-              {open ? "Awtorlar" : ""}
+              {open ? "Subkategoriýa" : ""}
             </MenuItem>
-             <MenuItem
+            {/* <MenuItem
               component={<NavLink className="sideNav" to="/sms" />}
               icon={<SmsIcon />}
             >

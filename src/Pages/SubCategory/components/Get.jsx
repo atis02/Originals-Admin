@@ -35,7 +35,11 @@ import { useThemeContext } from "../../../Components/db/Theme/ThemeContext";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 
 import { BASE_URL_Img } from "../../../Components/db/Redux/api/AxiosHelper";
-import UpdateCategoryModal from "./UpdateCategory";
+import UpdateCategoryModal from "./UpdateSubCategory";
+import {
+  deleteSubCategory,
+  getSubCategory,
+} from "../../../Components/db/Redux/api/SubCategorySlice";
 
 const Get = ({ searchTerm }) => {
   const [id, setId] = useState("");
@@ -61,9 +65,9 @@ const Get = ({ searchTerm }) => {
   const handleCloseUpdateCategory = () => setOpenUpdate(false);
 
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data.data);
-  const status = useSelector((state) => state.data.status);
-  const error = useSelector((state) => state.data.error);
+  const data = useSelector((state) => state.subcategory.data);
+  const status = useSelector((state) => state.subcategory.status);
+  const error = useSelector((state) => state.subcategory.error);
   const meta = useSelector((state) => state.data.meta);
 
   console.log(data);
@@ -74,12 +78,12 @@ const Get = ({ searchTerm }) => {
   //   }
   // }, [status, dispatch, meta.page, meta.limit]);
   useEffect(() => {
-    dispatch(getCategory());
+    dispatch(getSubCategory());
   }, [dispatch]);
 
   const handleDelete = (category_id) => {
     const body = { id: category_id };
-    dispatch(deleteCategory(body));
+    dispatch(deleteSubCategory(body));
   };
   const handleCreate = () => {
     const body = new FormData();
@@ -113,6 +117,7 @@ const Get = ({ searchTerm }) => {
     p: 0,
     pl: 2,
     fontFamily: "Montserrat",
+    textTransform: "capitalize",
   };
 
   const style = {
@@ -246,6 +251,7 @@ const Get = ({ searchTerm }) => {
                   <TableRow>
                     <TableCell>№</TableCell>
                     <TableCell>Surady</TableCell>
+                    <TableCell>Kategoriýasy</TableCell>
                     <TableCell>Ady (TM)</TableCell>
                     <TableCell>Ady (RU)</TableCell>
                     <TableCell>Ady (EN)</TableCell>
@@ -291,6 +297,9 @@ const Get = ({ searchTerm }) => {
                             </Typography>
                           </Stack>
                         )}
+                      </TableCell>
+                      <TableCell sx={style2}>
+                        {category.parentCategory?.nameTm}
                       </TableCell>
                       <TableCell sx={style2}>{category.nameTm}</TableCell>
                       <TableCell sx={style2}>{category.nameRu}</TableCell>

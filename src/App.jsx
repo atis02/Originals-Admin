@@ -1,27 +1,15 @@
 import {
-  BrowserRouter,
   Navigate,
-  Route,
   RouterProvider,
-  Routes,
   createBrowserRouter,
-  useNavigate,
 } from "react-router-dom";
 import LandingPageLayout from "./layouts/LandingPageLayout";
 import Dashboard from "./Pages/Dashboard";
 import Main from "./Pages/Main";
 import Account from "./Pages/Account";
-import Video from "./Pages/Video";
-import Authors from "./Pages/Authors";
 import Category from "./Pages/Category";
-import Sms from "./Pages/Sms";
-import GiftCard from "./Pages/GiftCard";
-import Subscription from "./Pages/Subscription";
+import SubCategory from "./Pages/SubCategory";
 import Login from "./layouts/LogIn";
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { store } from "./Components/db/Redux/api/store";
-import GetOneVideo from "./Pages/Video/components/GetOneVideo";
 
 function App() {
   // const refToken = store.getState().refreshToken;
@@ -53,7 +41,6 @@ function App() {
         <ProtectedRoute>
           <LandingPageLayout />
         </ProtectedRoute>
-        // <LandingPageLayout />
       ),
       children: [
         {
@@ -69,32 +56,12 @@ function App() {
           element: <Category />,
         },
         {
-          path: "/authors",
-          element: <Authors />,
-        },
-        {
-          path: "/sms",
-          element: <Sms />,
-        },
-        {
-          path: "/video",
-          element: <Video />,
-        },
-        {
-          path: "/videos/:id",
-          element: <GetOneVideo />,
+          path: "/subcategory",
+          element: <SubCategory />,
         },
         {
           path: "/account",
           element: <Account />,
-        },
-        {
-          path: "/gift-cards",
-          element: <GiftCard />,
-        },
-        {
-          path: "/subscription",
-          element: <Subscription />,
         },
       ],
     },

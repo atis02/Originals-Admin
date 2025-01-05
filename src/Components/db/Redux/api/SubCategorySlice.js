@@ -17,28 +17,31 @@ const initialState = {
   loading: false,
 };
 // Create an async thunk for the GET request
-export const getCategory = createAsyncThunk(
-  "getCategory",
+export const getSubCategory = createAsyncThunk(
+  "getSubCategory",
   async () => {
     const response = await AxiosInstance.get(
-      `/category/all`
+      `/subCategory/all`
     );
-    return response.data;
+    console.log(response.data);
+    
+    return response.data.subCategories;
   }
 );
-export const deleteCategory = createAsyncThunk("deleteCategory", async (body) => {
+export const deleteSubCategory = createAsyncThunk("deleteSubCategory", async (body) => {
  try {
   console.log(body);
   
-  const resp = await AxiosInstance.delete(`/category/remove?id=${body.id}`);
+  const resp = await AxiosInstance.delete(`/subCategory/remove?id=${body.id}`);
+
   console.log(resp.data);
   
   if(resp.data.message ==='Üstünlikli!'){
 
-    const response = await AxiosInstance.get("/category/all");
+    const response = await AxiosInstance.get("/subCategory/all");
     toast.success("Üstünlikli!")
     
-    return response.data;
+    return response.data.subCategories;
   }else{
     toast.error("Ýalňyşlyk!");
 
@@ -48,15 +51,15 @@ export const deleteCategory = createAsyncThunk("deleteCategory", async (body) =>
   
  }
 });
-export const createCategory = createAsyncThunk(
-  "createCategory",
+export const createSubCategory = createAsyncThunk(
+  "createSubCategory",
   async (body) => {
     try {
-      const resp = await AxiosInstance.post("/category/add", body);
-      if(resp.data.message === 'Kategoriýa döredildi!'){
+      const resp = await AxiosInstance.post("/subCategory/add", body);
+      if(resp.data.message === 'Subkategoriýa döredildi!'){
         toast.success("Üstünlikli!");
-        const response = await AxiosInstance.get("/category/all");
-        return response.data;
+        const response = await AxiosInstance.get("/subCategory/all");
+        return response.data.subCategories;
       }else{
         toast.error("Ýalňyşlyk!");
       }
@@ -66,19 +69,19 @@ export const createCategory = createAsyncThunk(
    
   }
 );
-export const updateCategory = createAsyncThunk(
-  "updateCategory",
+export const updateSubCategory = createAsyncThunk(
+  "updateSubCategory",  
   async (body) => {
     try {
       console.log(body);
 
-      const resp = await AxiosInstance.patch("/category/update", body);
+      const resp = await AxiosInstance.put("/subCategory/update", body);
       console.log(resp);
       
       if(resp.data.message === 'Üstünlikli!'){
         toast.success("Üstünlikli!");
-        const response = await AxiosInstance.get("/category/all");
-        return response.data;
+        const response = await AxiosInstance.get("/subCategory/all");
+        return response.data.subCategories;
       }else{
         toast.error("Ýalňyşlyk!");
       }
@@ -91,61 +94,61 @@ export const updateCategory = createAsyncThunk(
 // Create the slice
 
 const dataSlice = createSlice({
-  name: "data",
+  name: "subcategory",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       // get
-      .addCase(getCategory.pending, (state) => {
+      .addCase(getSubCategory.pending, (state) => {
         state.status = "loading...";
       })
-      .addCase(getCategory.fulfilled, (state, action) => {
+      .addCase(getSubCategory.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.meta = action.payload.meta;
         state.data = action.payload;
       })
-      .addCase(getCategory.rejected, (state, action) => {
+      .addCase(getSubCategory.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
         state.error = action.error.message;
       })
       //delete
 
-      .addCase(deleteCategory.pending, (state) => {
+      .addCase(deleteSubCategory.pending, (state) => {
         state.status = "loading...";
       })
-      .addCase(deleteCategory.fulfilled, (state, action) => {
+      .addCase(deleteSubCategory.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
       })
-      .addCase(deleteCategory.rejected, (state, action) => {
+      .addCase(deleteSubCategory.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
       //create
 
-      .addCase(createCategory.pending, (state) => {
+      .addCase(createSubCategory.pending, (state) => {
         state.status = "loading...";
       })
-      .addCase(createCategory.fulfilled, (state, action) => {
+      .addCase(createSubCategory.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
       })
-      .addCase(createCategory.rejected, (state, action) => {
+      .addCase(createSubCategory.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
       //update
 
-      .addCase(updateCategory.pending, (state) => {
+      .addCase(updateSubCategory.pending, (state) => {
         state.status = "loading...";
       })
-      .addCase(updateCategory.fulfilled, (state, action) => {
+      .addCase(updateSubCategory.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.data = action.payload;
       })
-      .addCase(updateCategory.rejected, (state, action) => {
+      .addCase(updateSubCategory.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
