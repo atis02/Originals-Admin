@@ -66,7 +66,7 @@ const Get = ({ searchTerm }) => {
   const error = useSelector((state) => state.data.error);
   const meta = useSelector((state) => state.data.meta);
 
-  console.log(data);
+  console.log(status);
 
   // useEffect(() => {
   //   if (status === "idle") {
@@ -127,14 +127,17 @@ const Get = ({ searchTerm }) => {
     boxShadow: 14,
     p: 4,
   };
-  const filteredData = data.filter((item) => {
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return (
-      item.nameTm.toLowerCase().includes(lowerCaseSearchTerm) ||
-      item.nameRu.toLowerCase().includes(lowerCaseSearchTerm) ||
-      item.nameEn.toLowerCase().includes(lowerCaseSearchTerm)
-    );
-  });
+  const filteredData =
+    status === "succeeded"
+      ? data.filter((item) => {
+          const lowerCaseSearchTerm = searchTerm.toLowerCase();
+          return (
+            item.nameTm.toLowerCase().includes(lowerCaseSearchTerm) ||
+            item.nameRu.toLowerCase().includes(lowerCaseSearchTerm) ||
+            item.nameEn.toLowerCase().includes(lowerCaseSearchTerm)
+          );
+        })
+      : [];
 
   return (
     <>
@@ -217,15 +220,29 @@ const Get = ({ searchTerm }) => {
       {status === "loading..." ? (
         <Stack
           direction="column"
-          height="90%"
+          height="60%"
           alignItems="center"
-          sx={{ gap: "10px" }}
+          sx={{ gap: "10px", pt: 8 }}
         >
           <CircularProgress />
           Loading...
         </Stack>
       ) : status === "failed" ? (
-        toast.error(error)
+        error == "Network Error" ? (
+          (toast.error("Internet baglanyşygy ýok"),
+          (
+            <Typography textAlign="center" color="tomato" mt={7}>
+              Internet baglanyşygy ýok
+            </Typography>
+          ))
+        ) : (
+          (toast.error(error),
+          (
+            <Typography textAlign="center" color="tomato" mt={7}>
+              {error}
+            </Typography>
+          ))
+        )
       ) : status === "succeeded" ? (
         <Box p={1.5} pt={0}>
           {filteredData.length == 0 ? (

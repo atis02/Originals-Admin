@@ -222,20 +222,34 @@ const Get = ({ searchTerm }) => {
       {status === "loading..." ? (
         <Stack
           direction="column"
-          height="90%"
+          height="60%"
           alignItems="center"
-          sx={{ gap: "10px" }}
+          sx={{ gap: "10px", pt: 8 }}
         >
           <CircularProgress />
           Loading...
         </Stack>
       ) : status === "failed" ? (
-        toast.error(error)
+        error == "Network Error" ? (
+          (toast.error("Internet baglanyşygy ýok"),
+          (
+            <Typography textAlign="center" color="tomato" mt={7}>
+              Internet baglanyşygy ýok
+            </Typography>
+          ))
+        ) : (
+          (toast.error(error),
+          (
+            <Typography textAlign="center" color="tomato" mt={7}>
+              {error}
+            </Typography>
+          ))
+        )
       ) : status === "succeeded" ? (
         <Box p={1.5} pt={0}>
           {filteredData.length == 0 ? (
             <Typography textAlign="center" mt={7}>
-              Kategoriýa ýok!
+              Subkategoriýa ýok!
             </Typography>
           ) : (
             <TableContainer

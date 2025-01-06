@@ -32,7 +32,7 @@ const index = () => {
         >
           Subkategoriýalar
         </Typography>
-        <Stack width="65%">
+        <Stack width="60%">
           <TextField
             autoComplete="off"
             label="Gözleg..."
@@ -66,7 +66,6 @@ const index = () => {
           onClick={handleOpenCategory}
           sx={{
             height: 40,
-            p: 0,
             color: "inherit",
             textTransform: "revert",
             fontWeight: 600,

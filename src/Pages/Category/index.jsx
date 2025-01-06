@@ -66,7 +66,6 @@ const index = () => {
           onClick={handleOpenCategory}
           sx={{
             height: 40,
-            p: 0,
             color: "inherit",
             textTransform: "revert",
             fontWeight: 600,
