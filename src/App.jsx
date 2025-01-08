@@ -9,7 +9,9 @@ import Main from "./Pages/Main";
 import Account from "./Pages/Account";
 import Category from "./Pages/Category";
 import SubCategory from "./Pages/SubCategory";
+import Products from "./Pages/Products";
 import Login from "./layouts/LogIn";
+import NewProduct from "./Pages/Products/components/NewProduct";
 
 function App() {
   // const refToken = store.getState().refreshToken;
@@ -58,6 +60,14 @@ function App() {
         {
           path: "/subcategory",
           element: <SubCategory />,
+        },
+        {
+          path: "/products",
+          element: <Products />,
+        },
+        {
+          path: "/products/new",
+          element: <NewProduct />,
         },
         {
           path: "/account",

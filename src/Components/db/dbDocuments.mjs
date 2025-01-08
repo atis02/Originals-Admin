@@ -1,3 +1,4 @@
+
 export const dbDoc = [
     // { statusType:'2',status:'Barlagda',id: '5', description: 'Harydyň düzüm birligi üçin tassyknama', title: 'Tassyknama', sender: 'Başlyk', file_type: 'doc', file_link: '/docs/Ikramow Atamyrat ylmy iş Täze.docx', limit_date: '7d', send_date: '15/02/2024' },
     // { statusType:'0',status:'Yzyna gaýtarylan',id: '1', description: 'Harytlary geljekde ylalaşykdaky baha esasynda satyn almak boýunça şertnama', title: 'Şertnama', sender: 'Buhgalter', file_type: 'xlsx', file_link: '/docs/test.xlsx', limit_date: '3d', send_date: '13/02/2024' },
@@ -9,3 +10,25 @@ export const dbDoc = [
     // { statusType:'1',status:'Tassyklanan',id: '8', description: 'Harydyň hili boýunça güwanama', title: 'Güwänama', sender: 'Buhgalter', file_type: 'pdf', file_link: '/docs/test2.pdf', limit_date: '1d', send_date: '12/02/2024' },
 
 ]
+// export const inputsStyle = {
+//     "& .MuiOutlinedInput-root": {
+//       height: 40,
+//       minWidth: "250px",
+//       width: "100%",
+//       ...(mode === "dark" ? { color: "#fff" } : { color: "#00B69B" }),
+//       "&:hover fieldset": {
+//         borderColor: "#00B69B",
+//       },
+//       "&.Mui-focused fieldset": {
+//         borderColor: "#00B69B",
+//         borderWidth: 2,
+//       },
+//     },
+//     "& .MuiInputLabel-root": {
+//       pt: -3,
+//       lineHeight: "1",
+//       "&.Mui-focused": {
+//         color: "#00B69B",
+//       },
+//     },
+//   };

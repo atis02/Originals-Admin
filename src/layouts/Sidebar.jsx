@@ -41,6 +41,7 @@ import { useThemeContext } from "../Components/db/Theme/ThemeContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ClearIcon from "@mui/icons-material/Clear";
 import WidgetsIcon from "@mui/icons-material/Widgets";
+import { PiPackageFill } from "react-icons/pi";
 
 export default function SidebarNav() {
   const [open, setOpen] = useState(() =>
@@ -225,13 +226,13 @@ export default function SidebarNav() {
             >
               {open ? "Subkategoriýa" : ""}
             </MenuItem>
-            {/* <MenuItem
-              component={<NavLink className="sideNav" to="/sms" />}
-              icon={<SmsIcon />}
-            >
-              {open ? "Sms" : ""}
-            </MenuItem>
             <MenuItem
+              component={<NavLink className="sideNav" to="/products" />}
+              icon={<PiPackageFill size={26} />}
+            >
+              {open ? "Harytlar" : ""}
+            </MenuItem>
+            {/*  <MenuItem
               component={<NavLink className="sideNav" to="/video" />}
               icon={<YouTubeIcon />}
             >
