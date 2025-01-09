@@ -1,182 +1,23 @@
-// import { Autocomplete, Box, Stack, TextField, Typography } from "@mui/material";
-// import React, { useEffect, useState } from "react";
-// import { useThemeContext } from "../../../Components/db/Theme/ThemeContext";
-// import { useDispatch, useSelector } from "react-redux";
-// import { getCategory } from "../../../Components/db/Redux/api/ReduxSlice";
-// import { getSubCategory } from "../../../Components/db/Redux/api/SubCategorySlice";
-
-// const NewProduct = () => {
-//   const [formData, setFormData] = useState({
-//     nameTm: "",
-//     nameRu: "",
-//     nameEn: "",
-//     barcode: "",
-//     categoryId: null,
-//     subCategoryId: null,
-//   });
-//   const [filteredSubCategories, setFilteredSubCategories] = useState([]);
-
-//   const categories = useSelector((state) => state.data.data);
-//   const subCategories = useSelector((state) => state.subcategory.data);
-//   const dispatch = useDispatch();
-
-//   useEffect(() => {
-//     dispatch(getCategory());
-//     dispatch(getSubCategory());
-//   }, [dispatch]);
-
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleCategoryChange = (event, value) => {
-//     const categoryId = value ? value.id : null;
-//     setFormData((prev) => ({ ...prev, categoryId, subCategoryId: null }));
-
-//     // Filter subcategories based on the selected category
-//     const filtered = subCategories.filter(
-//       (sub) => sub.categoryId === categoryId
-//     );
-//     setFilteredSubCategories(filtered);
-//   };
-
-//   const handleSubCategoryChange = (event, value) => {
-//     setFormData((prev) => ({
-//       ...prev,
-//       subCategoryId: value ? value.id : null,
-//     }));
-//   };
-
-//   const inputStyle = {
-//     "& .MuiOutlinedInput-root": {
-//       "&:hover fieldset": {
-//         borderColor: "#00B69B",
-//       },
-//       "&.Mui-focused fieldset": {
-//         borderColor: "#00B69B",
-//         borderWidth: 2,
-//       },
-//     },
-//     "& .MuiInputLabel-root": {
-//       pt: -3,
-//       lineHeight: "1",
-//       "&.Mui-focused": {
-//         color: "#00B69B",
-//       },
-//     },
-//   };
-
-//   const { mode } = useThemeContext();
-
-//   return (
-//     <Box height="100vh" overflow="auto" width="100%">
-//       <Stack direction="row" p="5px 13px" justifyContent="space-between">
-//         <Typography
-//           fontSize={{ lg: "20px", md: "20px", sm: "18px", xs: "16px" }}
-//           fontFamily="Montserrat"
-//           fontWeight="600"
-//           width="10%"
-//           sx={{
-//             ...(mode === "dark" ? { color: "inherit" } : { color: "#474747" }),
-//           }}
-//         >
-//           Täze Haryt
-//         </Typography>
-//       </Stack>
-
-//       <Stack width="100%" justifyContent="space-between" direction="row">
-//         <Stack width="100%" spacing={1} p={1}>
-//           <TextField
-//             sx={inputStyle}
-//             label="Ady (TM)"
-//             name="nameTm"
-//             autoComplete="off"
-//             value={formData.nameTm}
-//             onChange={handleInputChange}
-//             variant="outlined"
-//             size="small"
-//             fullWidth
-//           />
-//           <TextField
-//             sx={inputStyle}
-//             label="Ady (RU)"
-//             autoComplete="off"
-//             name="nameRu"
-//             value={formData.nameRu}
-//             onChange={handleInputChange}
-//             variant="outlined"
-//             size="small"
-//             fullWidth
-//           />
-//           <TextField
-//             sx={inputStyle}
-//             label="Ady (EN)"
-//             autoComplete="off"
-//             name="nameEn"
-//             value={formData.nameEn}
-//             onChange={handleInputChange}
-//             variant="outlined"
-//             size="small"
-//             fullWidth
-//           />
-//         </Stack>
-//         <Stack width="100%" spacing={1} p={1}>
-//           <TextField
-//             sx={inputStyle}
-//             label="Barkod"
-//             autoComplete="off"
-//             name="barcode"
-//             value={formData.barcode}
-//             onChange={handleInputChange}
-//             variant="outlined"
-//             size="small"
-//             fullWidth
-//           />
-//           <Autocomplete
-//             sx={inputStyle}
-//             options={categories || []}
-//             getOptionLabel={(option) => option.nameTm || ""}
-//             onChange={handleCategoryChange}
-//             renderInput={(params) => (
-//               <TextField
-//                 {...params}
-//                 fullWidth
-//                 label="Kategoriýa"
-//                 size="small"
-//               />
-//             )}
-//           />
-//           <Autocomplete
-//             sx={inputStyle}
-//             options={filteredSubCategories || []}
-//             getOptionLabel={(option) => option.nameTm || ""}
-//             onChange={handleSubCategoryChange}
-//             renderInput={(params) => (
-//               <TextField
-//                 {...params}
-//                 label="Subkategoriýa"
-//                 variant="outlined"
-//                 size="small"
-//               />
-//             )}
-//           />
-//         </Stack>
-//       </Stack>
-//     </Box>
-//   );
-// };
-
-// export default NewProduct;
-
 import React, { useState, useEffect } from "react";
 import {
   Autocomplete,
   Box,
   Button,
   Divider,
+  FormControl,
+  IconButton,
   Input,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -189,7 +30,12 @@ import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ClearIcon from "@mui/icons-material/Clear";
 import SwiperWithFileInput from "./ImageInput";
-
+import MinImgInput from "./MinImgInput";
+import HoverImgInput from "./HoverImgInput";
+import { LuPackagePlus } from "react-icons/lu";
+import SwitchComponent from "../../../layouts/Switch";
+import ProductSwitchComponent from "../../../layouts/ProductSwitch";
+import { toast } from "react-toastify";
 const NewProduct = () => {
   const [formData, setFormData] = useState({
     nameTm: "",
@@ -200,34 +46,51 @@ const NewProduct = () => {
     subCategoryId: null,
   });
   const [openProductType, setOpenProductType] = useState(true);
-  const [productImages, setProductImages] = useState([
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-  ]);
-  const [productTypeFields, setProductTypeFields] = useState([
-    {
-      nameTm: "",
-      nameRu: "",
-      nameEn: "",
-      descriptionTm: "",
-      descriptionRu: "",
-      descriptionEn: "",
-      sellPrice: 0,
-      salePrice: 0,
-      salePricePercent: 0,
-      incomePrice: 0,
-      productQuantity: "",
-      productColorId: "",
-    },
-  ]);
+  const [images, setImages] = useState(Array(5).fill(null));
+  const [imagesMin, setImagesMin] = useState(null);
+  const [imageMin, setImageMin] = useState(null);
+  const [imagesHover, setImagesHover] = useState(null);
+  const [imageHover, setImageHover] = useState(null);
+  const [active, setActive] = useState(true);
 
+  const [productImages, setProductImages] = useState([]);
+  const [productType, setProductType] = useState([]);
+
+  const [productTypeFields, setProductTypeFields] = useState({
+    nameTm: "",
+    nameRu: "",
+    nameEn: "",
+    descriptionTm: "",
+    descriptionRu: "",
+    descriptionEn: "",
+    sellPrice: 0,
+    discount_priceTMT: 0,
+    discount_pricePercent: 0,
+    incomePrice: 0,
+    sizesWithQuantities: null,
+  });
+  console.log(productType);
+
+  // const handleNewProductSubmit = () => {
+  //   const productDetail = {
+  //     nameTm: formData.nameTm,
+  //     nameRu: formData.nameRu,
+  //     nameEn: formData.nameEn,
+  //     barcode: formData.barcode,
+  //     categoryId: formData.categoryId,
+  //     subCategoryId: formData.subCategoryId,
+  //     isActive: active,
+  //   };
+  //   const colorDetail = productTypeFields;
+  //   console.log(productDetail);
+  //   console.log(colorDetail);
+  // };
+  const dispatch = useDispatch();
+  const sizeTable = useSelector((es) => es.size.data);
+  const sizeTableStatus = useSelector((es) => es.size.status);
+  console.log(sizeTableStatus);
   const categories = useSelector((state) => state.data.data);
   const subCategories = useSelector((state) => state.subcategory.data);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getCategory());
@@ -260,33 +123,48 @@ const NewProduct = () => {
     setOpenProductType(true);
   };
 
-  const handleSubmit = () => {
-    console.log("Form Data:", formData);
-    console.log("Product Types:", productTypeFields);
-    setProductTypeFields([
-      ...productTypeFields,
-      {
-        nameTm: "",
-        nameRu: "",
-        nameEn: "",
-        descriptionTm: "",
-        descriptionRu: "",
-        descriptionEn: "",
-        sellPrice: "",
-        incomePrice: "",
-        productQuantity: "",
-        productColorId: "",
-      },
-    ]);
+  const handleAddProductType = () => {
+    const newProductType = {
+      nameTm: "",
+      nameRu: "",
+      nameEn: "",
+      descriptionTm: "",
+      descriptionRu: "",
+      descriptionEn: "",
+      sellPrice: 0,
+      discount_priceTMT: 0,
+      discount_pricePercent: 0,
+      incomePrice: 0,
+      sizesWithQuantities: null,
+    };
+
+    setProductType((prev) => [...prev, newProductType]);
   };
-  const handleImageUpload = (e, index) => {
-    const file = e.target.files[0];
+  const handleFileChange = (event, index) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    setProductImages((prevImagesAll) => [...prevImagesAll, file]);
+    const newImages = [...images];
+    newImages[index] = URL.createObjectURL(file);
+    setImages(newImages);
+  };
+
+  const handleMinImage = (event) => {
+    const file = event.target.files[0];
     if (file) {
-      const newProductImages = [...productImages];
-      newProductImages[index] = file;
-      setProductImages(newProductImages);
+      setImageMin(file);
+      setImagesMin(URL.createObjectURL(file));
     }
   };
+  const handleHoverImage = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setImageHover(file);
+      setImagesHover(URL.createObjectURL(file));
+    }
+  };
+  const { mode } = useThemeContext();
+
   const inputStyle = {
     "& .MuiOutlinedInput-root": {
       "&:hover fieldset": {
@@ -303,9 +181,193 @@ const NewProduct = () => {
       },
     },
   };
+  const inputsStyle2 = {
+    "& .MuiOutlinedInput-root": {
+      height: 40,
+      width: "150px",
+      ...(mode === "dark" ? { color: "#fff" } : { color: "#00B69B" }),
+      "&:hover fieldset": {
+        borderColor: "#00B69B",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#00B69B",
+        borderWidth: 2,
+      },
+    },
+    "& .MuiInputLabel-root": {
+      pt: -3,
+      lineHeight: "1",
+      "&.Mui-focused": {
+        color: "#00B69B",
+      },
+    },
+  };
+  console.log(productImages);
+  const handleSwitchToggle = (newState) => {
+    console.log("Switch toggled to:", newState);
+    setActive(newState);
+  };
 
-  const { mode } = useThemeContext();
+  const areAllFieldsFilled = () => {
+    for (const field of productType) {
+      if (!productType[0][field]) {
+        return next(ApiError.badRequest(`${field} is required`));
+      }
+    }
+    // return productType.every((item) =>
+    //   Object.entries(item).every(([key, value]) => {
+    //     console.log(key);
 
+    //     if (key === "discount_priceTMT" || key === "discount_pricePercent") {
+    //       return true;
+    //     }
+    //     // Check that the field is not empty
+    //     return value !== undefined && value !== null && value !== "";
+    //   })
+    // );
+  };
+  console.log(productTypeFields);
+
+  const [textFieldValues, setTextFieldValues] = useState([]);
+  const [selectedValue, setSelectedValue] = useState([]);
+
+  const [formValues, setFormValues] = useState({
+    id: Math.floor(Math.random() * 100) + 1,
+    sizesWithQuantities: textFieldValues,
+    nameTm: "",
+    nameRu: "",
+    nameEn: "",
+    descriptionTm: "",
+    descriptionRu: "",
+    descriptionEn: "",
+    sellPrice: "",
+    discount_priceTMT: 0,
+    discount_pricePercent: 0,
+    incomePrice: "",
+    // nameTm: productType?.nameTm || "",
+    // nameRu: productType?.nameRu || "",
+    // nameEn: productType?.nameEn || "",
+    // descriptionTm: productType?.descriptionTm || "",
+    // descriptionRu: productType?.descriptionRu || "",
+    // descriptionEn: productType?.descriptionEn || "",
+    // incomePrice: productType?.incomePrice || 0,
+    // sellPrice: productType?.sellPrice || 0,
+    // discountPriceTMT: productType?.discount_priceTMT || 0,
+    // salePricePercent: productType?.salePricePercent || 0,
+  });
+
+  const handleChangeSelectedValue = (event) => {
+    setSelectedValue(event.target.value);
+  };
+  useEffect(() => {
+    if (selectedValue.sizes?.length > 0) {
+      const initialValues = selectedValue.sizes.map((elem) => ({
+        size: elem.name,
+        quantity: 0, // Initially, set quantity as an empty string
+      }));
+      setTextFieldValues(initialValues);
+    }
+  }, [selectedValue.sizes]);
+
+  const handleProductTypeInputChange = (field, value) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [field]: value,
+    }));
+  };
+
+  const handleTextFieldChange = (sizeName, quantity) => {
+    const parsedQuantity = parseInt(quantity, 10) || 0; // Parse input to a number
+    const updatedTextFieldValues = textFieldValues.map((item) =>
+      item.size === sizeName ? { ...item, quantity: parsedQuantity } : item
+    );
+    setTextFieldValues(updatedTextFieldValues);
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      sizesWithQuantities: updatedTextFieldValues, // Update sizesWithQuantities in formValues
+    }));
+  };
+  const style2 = {
+    p: 0,
+    pl: 2,
+    fontFamily: "Montserrat",
+    textAlign: "center",
+  };
+  console.log(formValues);
+  console.log(productType);
+  const handleNewProductSubmit = () => {
+    // if (!areAllFieldsFilled()) {
+    //   toast.warn("Maglumatlary giriz!");
+    //   return;
+    // }
+    const checkAllData = (data) => {
+      // List of keys to check directly (strings and numbers)
+      const keysToCheck = [
+        "incomePrice",
+        "nameEn",
+        "nameRu",
+        "nameTm",
+        "sellPrice",
+      ];
+
+      // Check the values of each key in the object directly
+      for (let key of keysToCheck) {
+        if (data[key] === null || data[key] === undefined || data[key] === "") {
+          toast.warn(`Maglumatlary doly giriz!`);
+          return false; // If any field is invalid, return false
+        }
+      }
+
+      // Check the 'sizesWithQuantities' array for invalid quantities or missing fields
+      for (let i = 0; i < data.sizesWithQuantities.length; i++) {
+        const size = data.sizesWithQuantities[i];
+
+        if (size.size === 0) {
+          toast.warn(`Size for entry ${i} is invalid`);
+          return false;
+        }
+
+        if (
+          size.quantity === null ||
+          size.quantity === undefined ||
+          size.quantity === 0
+        ) {
+          toast.warn(`Haryt sany ${size.size} razmerde ýok`);
+          return false; // If any quantity is invalid
+        }
+      }
+      if (imagesMin == null || imagesHover == null || images[0] == null) {
+        toast.warn(`Surat goşmaly!`);
+        return;
+      }
+      toast.success("Üstünlikli!");
+      setProductType((prev) => [...prev, formValues]);
+      setOpenProductType(false);
+
+      return true; // Return true if everything is valid
+    };
+    checkAllData(formValues);
+    const productDetail = {
+      nameTm: formData.nameTm,
+      nameRu: formData.nameRu,
+      nameEn: formData.nameEn,
+      barcode: formData.barcode,
+      categoryId: formData.categoryId,
+      subCategoryId: formData.subCategoryId,
+      isActive: active,
+    };
+    // setProductType((prev) => [...prev, productTypeFields]);
+    console.log(productDetail);
+
+    const colorDetail = productTypeFields;
+
+    console.log("Product Detail:", productDetail);
+    console.log("Color Detail:", colorDetail);
+  };
+  const handleDelete = (id) => {
+    const filtered = productType.filter((item) => item.id !== id);
+    setProductType(filtered);
+  };
   return (
     <Box height="100vh" overflow="auto" width="100%" p={1}>
       <Stack direction="row" p="5px 13px" justifyContent="space-between">
@@ -323,7 +385,7 @@ const NewProduct = () => {
         <Stack width="100%" spacing={1}>
           <TextField
             sx={inputStyle}
-            label="Name (TM)"
+            label="Ady (TM)"
             name="nameTm"
             autoComplete="off"
             value={formData.nameTm}
@@ -334,7 +396,7 @@ const NewProduct = () => {
           />
           <TextField
             sx={inputStyle}
-            label="Name (RU)"
+            label="Ady (RU)"
             name="nameRu"
             autoComplete="off"
             value={formData.nameRu}
@@ -345,7 +407,7 @@ const NewProduct = () => {
           />
           <TextField
             sx={inputStyle}
-            label="Name (EN)"
+            label="Ady (EN)"
             name="nameEn"
             autoComplete="off"
             value={formData.nameEn}
@@ -359,7 +421,7 @@ const NewProduct = () => {
         <Stack width="100%" spacing={1}>
           <TextField
             sx={inputStyle}
-            label="Barcode"
+            label="Barkody"
             name="barcode"
             autoComplete="off"
             value={formData.barcode}
@@ -388,8 +450,128 @@ const NewProduct = () => {
           />
         </Stack>
       </Stack>
-      <Divider sx={{ mt: 2, bgcolor: "gray" }} />
-      <Stack alignItems="end" mt={1} width="100%">
+      <Divider sx={{ mt: 2, mb: 2, bgcolor: "gray" }} />
+      {productType.length ? (
+        <Stack spacing={1} mt={1}>
+          <Typography
+            fontSize={{ lg: "20px", md: "20px", sm: "18px", xs: "16px" }}
+            fontFamily="Montserrat"
+            fontWeight="600"
+            sx={mode === "dark" ? { color: "inherit" } : { color: "#474747" }}
+          >
+            Harydyň görnüşleri
+          </Typography>
+          <Stack
+            // key={index}
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            border="1px solid gray"
+            p={0.5}
+          >
+            {/* <img
+                src={imagesMin}
+                style={{ width: 60, height: 60, borderRadius: 3 }}
+                alt=""
+              />
+              <Typography>
+                {index + 1}. {item.nameTm}
+              </Typography> */}
+            <TableContainer
+              sx={{
+                ...(mode === "dark"
+                  ? { background: "#0D1117" }
+                  : { background: "#F3F2F7" }),
+              }}
+              component={Paper}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ ...style2, p: 1 }}>№</TableCell>
+                    <TableCell sx={{ ...style2, p: 1 }}>Surady</TableCell>
+                    <TableCell sx={{ ...style2, p: 1 }}>Ady (TM)</TableCell>
+                    <TableCell sx={{ ...style2, p: 1 }}>Bahasy (TMT)</TableCell>
+                    <TableCell sx={{ ...style2, p: 1 }}>
+                      Arzanladyş (TMT)
+                    </TableCell>
+                    <TableCell sx={{ ...style2, p: 1 }}>Aktiw</TableCell>
+                    <TableCell sx={{ ...style2, p: 1 }}></TableCell>
+                    {/* <TableCell>Hereketler</TableCell> */}
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {productType.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell sx={style2}>{index + 1}</TableCell>
+                      <TableCell sx={style2}>
+                        <img
+                          src={imagesMin}
+                          alt="image of product"
+                          style={{
+                            maxWidth: "50px",
+                            maxHeight: "50px",
+                            objectFit: "contain",
+                          }}
+                          crossOrigin="anonymous"
+                        />
+                      </TableCell>
+                      <TableCell sx={style2}>{item.nameTm}</TableCell>
+                      <TableCell sx={style2}>{item.sellPrice}</TableCell>
+                      <TableCell sx={style2}>
+                        {item.discount_priceTMT}
+                      </TableCell>
+                      <TableCell sx={style2}>
+                        {active ? "Hawa" : "Ýok"}
+                      </TableCell>
+                      <TableCell sx={style2}>
+                        {/* <IconButton
+                          onClick={() => {
+                            handleOpenUpdateitem(item);
+                            setId(item.id);
+                          }}
+                          sx={{ backgroundColor: "inherit", color: "#fff" }}
+                        >
+                          <BorderColorOutlinedIcon
+                            sx={{
+                              color: "#00B69B",
+                              width: 20,
+                              height: 20,
+                            }}
+                          />
+                        </IconButton> */}
+                        <IconButton
+                          onClick={() => handleDelete(item.id)}
+                          sx={{ backgroundColor: "inherit", color: "#fff" }}
+                        >
+                          <img
+                            style={{ width: 20, height: 20 }}
+                            src="/images/Delete.png"
+                            alt=""
+                          />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Stack>
+        </Stack>
+      ) : (
+        <Typography
+          fontSize={{ lg: "20px", md: "20px", sm: "18px", xs: "16px" }}
+          fontFamily="Montserrat"
+          fontWeight="600"
+          sx={mode === "dark" ? { color: "inherit" } : { color: "#474747" }}
+          textAlign="center"
+        >
+          Harydyň görnüşini goşuň{" "}
+        </Typography>
+      )}
+
+      <Stack mt={1} width="100%" alignItems={"end"}>
         <Stack direction="row" spacing={1}>
           {openProductType ? (
             <Button
@@ -433,6 +615,7 @@ const NewProduct = () => {
           )}
         </Stack>
 
+        {/* <Stack></Stack> */}
         {openProductType && (
           <Stack width="100%" mt={-4}>
             <Typography
@@ -445,63 +628,143 @@ const NewProduct = () => {
             </Typography>
 
             <Forms
-              productTypeFields={productTypeFields}
-              handleProductTypeChange={handleProductTypeChange}
+              formValues={formValues}
+              handleProductTypeInputChange={handleProductTypeInputChange}
+              textFieldValues={textFieldValues}
+              setTextFieldValues={setTextFieldValues}
+              handleTextFieldChange={handleTextFieldChange}
+              selectedValue={selectedValue}
+              setSelectedValue={setSelectedValue}
+              handleChangeSelectedValue={handleChangeSelectedValue}
+              setFormValues={setFormValues}
             />
-            <SwiperWithFileInput
-            // images={productImages.filter((img) => img !== null)}
-            />
-            {/* <Stack
+            <Stack
               direction="row"
-              flexWrap="wrap"
-              spacing={2}
-              sx={{ width: "100%", gap: 2 }}
+              // flexWrap="wrap"
+              alignItems="center"
+              spacing={4}
+              mb={2}
             >
-              {[1, 2, 3, 4, 5, 6].map((num) => (
-                <Stack
-                  key={num}
-                  direction="column"
-                  alignItems="center"
-                  spacing={1}
-                  sx={{ width: "100%", maxWidth: "150px" }}
-                >
-                  <Input
-                    type="file"
-                    onChange={(e) => handleImageUpload(e, num - 1)}
-                    inputProps={{
-                      accept: "image/*",
-                      id: `productImage${num}`,
-                    }}
+              <Stack width={"25%"} m={1}>
+                <FormControl>
+                  <InputLabel id="select-label" sx={{ height: 40, mb: 2 }}>
+                    Razmer hataryny saýlaň
+                  </InputLabel>
+                  <Select
+                    labelId="select-label"
+                    value={selectedValue}
+                    onChange={handleChangeSelectedValue}
+                    label="Razmer hataryny saýlaň"
+                    // size="small"
                     sx={{
-                      display: "none",
+                      borderRadius: "10px", // Custom border radius
+                      // backgroundColor: "white", // Background color
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#00B69B", // Border color
+                      },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#007A5A", // Hover border color
+                      },
                     }}
-                  />
-                  <label htmlFor={`productImage${num}`}>
-                    <Button
-                      variant="outlined"
-                      component="span"
-                      sx={{
-                        textAlign: "center",
-                        textTransform: "none",
-                        fontSize: "0.875rem",
-                      }}
+                  >
+                    {sizeTableStatus === "succeeded" ? (
+                      sizeTable.map((elem) => (
+                        <MenuItem value={elem} key={elem.id}>
+                          {elem.name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem disabled>Loading...</MenuItem>
+                    )}
+                  </Select>
+                </FormControl>
+              </Stack>
+              <Stack width="100%" direction="row" gap={1} flexWrap="wrap">
+                {selectedValue.sizes?.length == 0 ? (
+                  <Typography>Razmer ýok</Typography>
+                ) : (
+                  selectedValue.sizes?.map((elem) => (
+                    <Stack
+                      key={elem.id}
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
                     >
-                      Картина {num}
-                    </Button>
-                  </label>
-                  {productImages[num - 1] && (
-                    <Typography variant="body2">
-                      {productImages[num - 1].name}
-                    </Typography>
-                  )}
+                      <Typography>{elem.name}</Typography>
+                      <TextField
+                        autoComplete="off"
+                        label="Haryt sany"
+                        value={
+                          textFieldValues.find(
+                            (item) => item.size === elem.name
+                          )?.quantity || ""
+                        }
+                        onChange={(e) =>
+                          handleTextFieldChange(elem.name, e.target.value)
+                        }
+                        size="small"
+                        fullWidth
+                        sx={inputsStyle2}
+                      />
+                    </Stack>
+                  ))
+                )}
+              </Stack>
+            </Stack>
+            <Stack direction="row" spacing={2}>
+              <SwiperWithFileInput
+                images={images}
+                setImages={setImages}
+                handleFileChange={handleFileChange}
+              />
+
+              <Stack direction="column" spacing={1} height="30%">
+                <Stack direction="row" spacing={1} height="30%">
+                  <MinImgInput
+                    images={imagesMin}
+                    setImages={setImagesMin}
+                    handleFileChange={handleMinImage}
+                  />
+                  <HoverImgInput
+                    images={imagesHover}
+                    setImages={setImagesHover}
+                    handleFileChange={handleHoverImage}
+                  />
                 </Stack>
-              ))}
-            </Stack> */}
+                <Stack alignItems="center" width="100%">
+                  <ProductSwitchComponent
+                    // data={data}
+                    onChange={handleSwitchToggle}
+                  />
+
+                  <Button
+                    variant="contained"
+                    sx={{
+                      textTransform: "revert",
+                      minWidth: "70%",
+                      height: 40,
+                      color: "#fff",
+                      bgcolor: "#00B69B",
+                      "&:hover": { bgcolor: "#00B69B" },
+                      fontWeight: 500,
+                      fontFamily: "Montserrat",
+                      fontSize: 16,
+                      mt: 2,
+                    }}
+                    // onClick={handleNewProductSubmit}
+                    onClick={handleNewProductSubmit}
+                  >
+                    {/* <LuPackagePlus /> */}
+                    <LuPackagePlus
+                      style={{ width: 30, height: 30, marginRight: 8 }}
+                    />
+                    Goşmak
+                  </Button>
+                </Stack>
+              </Stack>
+            </Stack>
           </Stack>
         )}
-        {/* <Button variant="contained" onClick={handleSubmit}>
-          Submit
-        </Button> */}
       </Stack>
     </Box>
   );

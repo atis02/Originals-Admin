@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, FormControlLabel, Switch, Typography } from "@mui/material";
 
-const SwitchComponent = ({ data, onChange }) => {
+const ProductSwitchComponent = ({ data, onChange }) => {
   // Initialize the switch state based on `data`
   const [switchState, setSwitchState] = useState(data?.isActive || true);
 
@@ -29,22 +29,27 @@ const SwitchComponent = ({ data, onChange }) => {
         flexDirection: "row",
         flexWrap: "wrap",
         alignItems: "center",
-        justifyContent: "end",
+        justifyContent: "space-between",
         gap: 1,
-        // p: 2,
-        // border: "1px solid lightgray",
+        pl: 1,
+        pr: 1,
+        border: "1px solid gray",
         borderRadius: "8px",
-        // minWidth: "100%",
+        minWidth: "70%",
         maxWidth: "400px",
+        mt: 1,
       }}
     >
-      <Typography variant="h6">Ýagdaýy</Typography>
+      <Typography variant="h6">Haryt aktiw</Typography>
       <FormControlLabel
         control={
           <Switch
             checked={switchState}
             onChange={handleSwitchChange}
-            color="primary"
+            // color="#00B69B"
+            sx={{
+              color: "#00B69B",
+            }}
           />
         }
         // label={switchState ? "Aktiw" : "Aktiw däl"}
@@ -56,4 +61,4 @@ const SwitchComponent = ({ data, onChange }) => {
   );
 };
 
-export default SwitchComponent;
+export default ProductSwitchComponent;
