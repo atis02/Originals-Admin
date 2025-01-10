@@ -12,6 +12,7 @@ import SubCategory from "./Pages/SubCategory";
 import Products from "./Pages/Products";
 import Login from "./layouts/LogIn";
 import NewProduct from "./Pages/Products/components/NewProduct";
+import Product from "./Pages/Product";
 
 function App() {
   // const refToken = store.getState().refreshToken;
@@ -64,6 +65,10 @@ function App() {
         {
           path: "/products",
           element: <Products />,
+        },
+        {
+          path: "/products/:id",
+          element: <Product />,
         },
         {
           path: "/products/new",

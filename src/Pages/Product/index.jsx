@@ -20,31 +20,34 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useThemeContext } from "../../../Components/db/Theme/ThemeContext";
+import { useThemeContext } from "../../Components/db/Theme/ThemeContext";
 import { useDispatch, useSelector } from "react-redux";
-import { getCategory } from "../../../Components/db/Redux/api/ReduxSlice";
-import { getSubCategory } from "../../../Components/db/Redux/api/SubCategorySlice";
-import Forms from "./Forms";
+import Forms from "./components/Forms";
 import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
-import SwiperWithFileInput from "./ImageInput";
-import MinImgInput from "./MinImgInput";
-import HoverImgInput from "./HoverImgInput";
+import SwiperWithFileInput from "./components/ImageInput";
+import MinImgInput from "./components/MinImgInput";
+import HoverImgInput from "./components/HoverImgInput";
 import { LuPackagePlus } from "react-icons/lu";
-import ProductSwitchComponent from "../../../layouts/ProductSwitch";
+import ProductSwitchComponent from "../../layouts/ProductSwitch";
 import { toast } from "react-toastify";
-import { createProduct } from "../../../Components/db/Redux/api/ProductSlice";
-import { useNavigate } from "react-router-dom";
-const NewProduct = () => {
+import { useNavigate, useParams } from "react-router-dom";
+import { getProductById } from "../../Components/db/Redux/api/ProductSlice";
+import { getCategory } from "../../Components/db/Redux/api/ReduxSlice";
+import { getSubCategory } from "../../Components/db/Redux/api/SubCategorySlice";
+const UpdateProduct = () => {
+  const data = useSelector((state) => state.product.data);
+  const status = useSelector((state) => state.product.status);
+  const error = useSelector((state) => state.product.error);
   const [formData, setFormData] = useState({
-    nameTm: "",
-    nameRu: "",
-    nameEn: "",
-    barcode: "",
-    categoryId: null,
-    subCategoryId: null,
+    nameTm: data?.nameTm,
+    nameRu: data?.nameRu,
+    nameEn: data?.nameEn,
+    barcode: data?.barcode,
+    categoryId: data?.categoryId,
+    subCategoryId: data?.subCategoryId,
   });
-  const [openProductType, setOpenProductType] = useState(true);
+  const [openProductType, setOpenProductType] = useState(false);
   const [images, setImages] = useState(Array(5).fill(null));
   const [imagesMin, setImagesMin] = useState(null);
   const [imageMin, setImageMin] = useState(null);
@@ -67,16 +70,24 @@ const NewProduct = () => {
     incomePrice: "",
   });
   const [productImages, setProductImages] = useState([]);
-  const [productType, setProductType] = useState([]);
+  const [productType, setProductType] = useState(data?.ProductColorDetails);
   const dispatch = useDispatch();
   const { mode } = useThemeContext();
-
+  const params = useParams();
   const sizeTable = useSelector((es) => es.size.data);
   const sizeTableStatus = useSelector((es) => es.size.status);
   const categories = useSelector((state) => state.data.data);
   const subCategories = useSelector((state) => state.subcategory.data);
 
+  console.log(productType);
+  console.log(data);
+
   useEffect(() => {
+    setProductType(data?.ProductColorDetails);
+  }, [data]);
+
+  useEffect(() => {
+    dispatch(getProductById(params.id));
     dispatch(getCategory());
     dispatch(getSubCategory());
   }, [dispatch]);
@@ -297,7 +308,7 @@ const NewProduct = () => {
           fontWeight="600"
           sx={mode === "dark" ? { color: "inherit" } : { color: "#474747" }}
         >
-          Täze Haryt
+          {data?.nameTm}
         </Typography>
       </Stack>
 
@@ -362,6 +373,7 @@ const NewProduct = () => {
           <Autocomplete
             sx={inputStyle}
             options={subCategories || []}
+            defaultValue={formData.subCategoryId}
             getOptionLabel={(option) => option.nameTm || ""}
             onChange={handleSubCategoryChange}
             renderInput={(params) => (
@@ -371,7 +383,7 @@ const NewProduct = () => {
         </Stack>
       </Stack>
       <Divider sx={{ mt: 2, mb: 2, bgcolor: "gray" }} />
-      {productType.length ? (
+      {productType ? (
         <Stack spacing={1} mt={1}>
           <Stack
             direction="row"
@@ -719,7 +731,7 @@ const NewProduct = () => {
           </Stack>
         )}
       </Stack>
-      {openProductType == false && productType.length ? (
+      {openProductType == false && productType ? (
         <Button
           variant="contained"
           sx={{
@@ -749,4 +761,4 @@ const NewProduct = () => {
   );
 };
 
-export default NewProduct;
+export default UpdateProduct;

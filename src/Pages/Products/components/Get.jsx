@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../../Components/db/Redux/api/ProductSlice";
+import {
+  deleteProduct,
+  getProducts,
+} from "../../../Components/db/Redux/api/ProductSlice";
 import {
   Box,
   Table,
@@ -104,7 +107,11 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
       },
     },
   };
-
+  const handleDelete = (id) => {
+    if (id) {
+      dispatch(deleteProduct(id));
+    }
+  };
   return (
     <>
       <Box p={1.5} pt={0.5}>
@@ -381,7 +388,7 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
                               }}
                             >
                               <img
-                                src={`${BASE_URL_Img}/images/${category.ProductColorDetails[0].minImage.replace(
+                                src={`${BASE_URL_Img}/images/${category.ProductColorDetails[0].minImage?.replace(
                                   "/static/",
                                   ""
                                 )}`}
@@ -445,7 +452,7 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
                             />
                           </IconButton>
                           <IconButton
-                            // onClick={() => handleDelete(category.id)}
+                            onClick={() => handleDelete(category.id)}
                             sx={{ backgroundColor: "inherit", color: "#fff" }}
                           >
                             <img
