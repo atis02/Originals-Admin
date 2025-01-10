@@ -35,8 +35,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getProductById } from "../../Components/db/Redux/api/ProductSlice";
 import { getCategory } from "../../Components/db/Redux/api/ReduxSlice";
 import { getSubCategory } from "../../Components/db/Redux/api/SubCategorySlice";
+import { BASE_URL_Img } from "../../Components/db/Redux/api/AxiosHelper";
+import SaveIcon from "@mui/icons-material/Save";
+import CreateIcon from "@mui/icons-material/Create";
+
 const UpdateProduct = () => {
-  const data = useSelector((state) => state.product.data);
+  const data = useSelector((state) => state.product.onProductData);
   const status = useSelector((state) => state.product.status);
   const error = useSelector((state) => state.product.error);
   const [formData, setFormData] = useState({
@@ -80,10 +84,18 @@ const UpdateProduct = () => {
   const subCategories = useSelector((state) => state.subcategory.data);
 
   console.log(productType);
-  console.log(data);
+  console.log(formData);
 
   useEffect(() => {
     setProductType(data?.ProductColorDetails);
+    setFormData({
+      nameTm: data?.nameTm,
+      nameRu: data?.nameRu,
+      nameEn: data?.nameEn,
+      barcode: data?.barcode,
+      categoryId: data?.categoryId,
+      subCategoryId: data?.subCategoryId,
+    });
   }, [data]);
 
   useEffect(() => {
@@ -299,6 +311,11 @@ const UpdateProduct = () => {
       navigate("/products");
     }
   };
+  const selectedValueSubcategory = subCategories.find(
+    (subCategory) => subCategory.id === formData.subCategoryId
+  );
+  console.log(selectedValueSubcategory);
+
   return (
     <Box height="100vh" overflow="auto" width="100%" p={1}>
       <Stack direction="row" p="5px 13px" justifyContent="space-between">
@@ -370,10 +387,12 @@ const UpdateProduct = () => {
               <TextField {...params} label="Kategoriýa" size="small" />
             )}
           />
+          {console.log(subCategories)}
+
           <Autocomplete
             sx={inputStyle}
             options={subCategories || []}
-            defaultValue={formData.subCategoryId}
+            defaultValue={selectedValueSubcategory.nameTm}
             getOptionLabel={(option) => option.nameTm || ""}
             onChange={handleSubCategoryChange}
             renderInput={(params) => (
@@ -396,7 +415,7 @@ const UpdateProduct = () => {
               fontWeight="600"
               sx={mode === "dark" ? { color: "inherit" } : { color: "#474747" }}
             >
-              Harydyň görnüşleri
+              Harydyň görnüşleri {`(${productType.length})`}
             </Typography>
             <Button
               variant="contained"
@@ -466,7 +485,7 @@ const UpdateProduct = () => {
                       <TableCell sx={style2}>{index + 1}</TableCell>
                       <TableCell sx={style2}>
                         <img
-                          src={imagesMin}
+                          src={`${BASE_URL_Img}/images/${item.minImage}`}
                           alt="image of product"
                           style={{
                             maxWidth: "50px",
@@ -485,27 +504,27 @@ const UpdateProduct = () => {
                         {active ? "Hawa" : "Ýok"}
                       </TableCell>
                       <TableCell sx={style2}>
-                        {/* <IconButton
+                        <IconButton
                           onClick={() => {
                             handleOpenUpdateitem(item);
                             setId(item.id);
                           }}
                           sx={{ backgroundColor: "inherit", color: "#fff" }}
                         >
-                          <BorderColorOutlinedIcon
+                          <CreateIcon
                             sx={{
                               color: "#00B69B",
-                              width: 20,
-                              height: 20,
+                              width: 25,
+                              height: 25,
                             }}
                           />
-                        </IconButton> */}
+                        </IconButton>
                         <IconButton
                           onClick={() => handleDelete(index)}
                           sx={{ backgroundColor: "inherit", color: "#fff" }}
                         >
                           <img
-                            style={{ width: 20, height: 20 }}
+                            style={{ width: 25, height: 25 }}
                             src="/images/Delete.png"
                             alt=""
                           />
@@ -732,28 +751,30 @@ const UpdateProduct = () => {
         )}
       </Stack>
       {openProductType == false && productType ? (
-        <Button
-          variant="contained"
-          sx={{
-            textTransform: "revert",
-            minWidth: "20%",
-            height: 40,
-            color: "#fff",
-            bgcolor: "#00B69B",
-            "&:hover": { bgcolor: "#00B69B" },
-            fontWeight: 500,
-            fontFamily: "Montserrat",
-            fontSize: 16,
-            mt: 2,
-          }}
-          // onClick={handleNewProductSubmit}
-          onClick={handleSubmit}
-        >
-          {/* <LuPackagePlus /> */}
-          <LuPackagePlus style={{ width: 30, height: 30, marginRight: 8 }} />
-          {/* Goşmak */}
-          Tassykla
-        </Button>
+        <Stack alignItems="end" mt={10}>
+          <Button
+            variant="contained"
+            sx={{
+              textTransform: "revert",
+              width: "20%",
+              height: 40,
+              color: "#fff",
+              bgcolor: "#00B69B",
+              "&:hover": { bgcolor: "#00B69B" },
+              fontWeight: 500,
+              fontFamily: "Montserrat",
+              fontSize: 16,
+              mt: 2,
+            }}
+            // onClick={handleNewProductSubmit}
+            onClick={handleSubmit}
+          >
+            {/* <LuPackagePlus /> */}
+            <SaveIcon style={{ width: 30, height: 30, marginRight: 8 }} />
+            {/* Goşmak */}
+            Ýatda sakla
+          </Button>
+        </Stack>
       ) : (
         ""
       )}

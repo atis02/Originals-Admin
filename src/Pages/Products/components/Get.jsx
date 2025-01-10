@@ -30,6 +30,7 @@ import { getCategory } from "../../../Components/db/Redux/api/ReduxSlice";
 import { getSubCategory } from "../../../Components/db/Redux/api/SubCategorySlice";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Get = ({ filters, handleFilterChange, setFilters }) => {
   const dispatch = useDispatch();
@@ -39,9 +40,10 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
   const status = useSelector((state) => state.product.status);
   const error = useSelector((state) => state.product.error);
   const meta = useSelector((state) => state.product.meta);
-  console.log(filters);
-
+  console.log(data);
+  const navigate = useNavigate();
   const { mode } = useThemeContext();
+
   useEffect(() => {
     dispatch(getProducts(filters));
     dispatch(getCategory());
@@ -51,7 +53,9 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
   const handleChangePagination = (event, value) => {
     setFilters((prev) => ({ ...prev, page: value }));
   };
-
+  const productNavigate = (id) => {
+    navigate(`/products/${id}`);
+  };
   const handleResetFilters = () => {
     setFilters({
       categoryId: "",
@@ -66,6 +70,7 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
     });
   };
   const style2 = {
+    cursor: "pointer",
     p: 0,
     ...(mode == "dark" ? { color: "#B2BDBF" } : { color: "inherit" }),
     fontFamily: "Montserrat",
@@ -372,10 +377,16 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
                   <TableBody>
                     {data.map((category, index) => (
                       <TableRow key={category.id}>
-                        <TableCell sx={{ ...style2, pl: 1, width: 15 }}>
+                        <TableCell
+                          sx={{ ...style2, pl: 1, width: 15 }}
+                          onClick={() => productNavigate(category.id)}
+                        >
                           {index + 1}
                         </TableCell>
-                        <TableCell sx={{ ...style2, width: 25 }}>
+                        <TableCell
+                          sx={{ ...style2, width: 25 }}
+                          onClick={() => productNavigate(category.id)}
+                        >
                           {category.ProductColorDetails ? (
                             <div
                               style={{
@@ -405,36 +416,50 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
                           )}
                         </TableCell>
                         <TableCell
+                          onClick={() => productNavigate(category.id)}
                           sx={{ ...style2, minWidth: 200, maxWidth: 200 }}
                         >
                           <Typography sx={style3}>{category.nameTm}</Typography>
                         </TableCell>
                         <TableCell
+                          onClick={() => productNavigate(category.id)}
                           sx={{ ...style2, minWidth: 200, maxWidth: 200 }}
                         >
                           <Typography sx={style3}>{category.nameRu}</Typography>
                         </TableCell>
                         <TableCell
+                          onClick={() => productNavigate(category.id)}
                           sx={{ ...style2, minWidth: 200, maxWidth: 200 }}
                         >
                           <Typography sx={style3}>{category.nameEn}</Typography>
                         </TableCell>
-                        <TableCell sx={style2}>
+                        <TableCell
+                          sx={style2}
+                          onClick={() => productNavigate(category.id)}
+                        >
                           {category.productCategory?.nameTm}
                         </TableCell>
-                        <TableCell sx={style2}>
+                        <TableCell
+                          sx={style2}
+                          onClick={() => productNavigate(category.id)}
+                        >
                           {category.ProductColorDetails?.[0].sellPrice} m
                         </TableCell>
 
-                        <TableCell sx={style2}>
+                        <TableCell
+                          sx={style2}
+                          onClick={() => productNavigate(category.id)}
+                        >
                           {category.isActive ? "Hawa" : "Ýok"}
                         </TableCell>
                         <TableCell
+                          onClick={() => productNavigate(category.id)}
                           sx={{ ...style2, width: "30px", textAlign: "center" }}
                         >
                           {dayjs(category.createdAt).format("DD.MM.YYYY HH:mm")}
                         </TableCell>
                         <TableCell
+                          onClick={() => productNavigate(category.id)}
                           sx={{ ...style2, width: "30px", textAlign: "center" }}
                         >
                           {dayjs(category.updatedAt).format("DD.MM.YYYY HH:mm")}
@@ -442,9 +467,7 @@ const Get = ({ filters, handleFilterChange, setFilters }) => {
 
                         <TableCell sx={style2}>
                           <IconButton
-                            onClick={() => {
-                              /* Add action for update */
-                            }}
+                            onClick={() => productNavigate(category.id)}
                             sx={{ ml: 2 }}
                           >
                             <BorderColorOutlinedIcon
