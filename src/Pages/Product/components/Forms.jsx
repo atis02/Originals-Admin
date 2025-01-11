@@ -472,8 +472,6 @@ const Forms = ({
   formValues,
   handleProductTypeInputChange,
   textFieldValues,
-  setTextFieldValues,
-  handleTextFieldChange,
 }) => {
   const [selectedValue, setSelectedValue] = useState([]);
   // const [textFieldValues, setTextFieldValues] = useState([]);

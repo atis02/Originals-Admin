@@ -13,6 +13,7 @@ import Products from "./Pages/Products";
 import Login from "./layouts/LogIn";
 import NewProduct from "./Pages/Products/components/NewProduct";
 import Product from "./Pages/Product";
+import ProductTypeUpdate from "./Pages/Product/updateProductType/ProductTypeUpdate";
 
 function App() {
   // const refToken = store.getState().refreshToken;
@@ -70,6 +71,10 @@ function App() {
           path: "/products/:id",
           element: <Product />,
         },
+        // {
+        //   path: "/products/:id/:productTypeId",
+        //   element: <ProductTypeUpdate />,
+        // },
         {
           path: "/products/new",
           element: <NewProduct />,

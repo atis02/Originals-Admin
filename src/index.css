@@ -41,6 +41,10 @@ textarea:hover{
   outline: none;
   border: 1px solid #00B69B !important;
 }
+.modal-update::-webkit-scrollbar{
+  width: 0px;
+
+}
 ::-webkit-scrollbar {
   width: 4px;
   background-color: var(--background-color);

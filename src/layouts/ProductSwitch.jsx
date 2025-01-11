@@ -35,7 +35,7 @@ const ProductSwitchComponent = ({ data, onChange }) => {
         pr: 1,
         border: "1px solid gray",
         borderRadius: "8px",
-        minWidth: "70%",
+        minWidth: "40%",
         maxWidth: "400px",
         mt: 1,
       }}

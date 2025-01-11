@@ -65,6 +65,7 @@ const NewProduct = () => {
     discount_priceTMT: 0,
     discount_pricePercent: 0,
     incomePrice: "",
+    sizeTableId: null,
   });
   const [productImages, setProductImages] = useState([]);
   const [productType, setProductType] = useState([]);
@@ -179,7 +180,12 @@ const NewProduct = () => {
 
   const handleChangeSelectedValue = (event) => {
     setSelectedValue(event.target.value);
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      sizeTableId: selectedValue.id,
+    }));
   };
+  console.log(formValues);
 
   const handleProductTypeInputChange = (field, value) => {
     setFormValues((prevValues) => ({
@@ -196,7 +202,7 @@ const NewProduct = () => {
     setTextFieldValues(updatedTextFieldValues);
     setFormValues((prevValues) => ({
       ...prevValues,
-      sizesWithQuantities: updatedTextFieldValues, // Update sizesWithQuantities in formValues
+      sizesWithQuantities: updatedTextFieldValues,
     }));
   };
   const style2 = {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-  Autocomplete,
   Box,
   Button,
+  CircularProgress,
   Divider,
   FormControl,
   IconButton,
@@ -32,12 +32,18 @@ import { LuPackagePlus } from "react-icons/lu";
 import ProductSwitchComponent from "../../layouts/ProductSwitch";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-import { getProductById } from "../../Components/db/Redux/api/ProductSlice";
+import {
+  createProductColor,
+  deleteProductColor,
+  getProductById,
+  updateProduct,
+} from "../../Components/db/Redux/api/ProductSlice";
 import { getCategory } from "../../Components/db/Redux/api/ReduxSlice";
 import { getSubCategory } from "../../Components/db/Redux/api/SubCategorySlice";
 import { BASE_URL_Img } from "../../Components/db/Redux/api/AxiosHelper";
 import SaveIcon from "@mui/icons-material/Save";
 import CreateIcon from "@mui/icons-material/Create";
+import ProductTypeUpdate from "./updateProductType/ProductTypeUpdate";
 
 const UpdateProduct = () => {
   const data = useSelector((state) => state.product.onProductData);
@@ -53,13 +59,16 @@ const UpdateProduct = () => {
   });
   const [openProductType, setOpenProductType] = useState(false);
   const [images, setImages] = useState(Array(5).fill(null));
+  const [productImages, setProductImages] = useState([]);
   const [imagesMin, setImagesMin] = useState(null);
   const [imageMin, setImageMin] = useState(null);
   const [imagesHover, setImagesHover] = useState(null);
   const [imageHover, setImageHover] = useState(null);
   const [active, setActive] = useState(true);
-  const [textFieldValues, setTextFieldValues] = useState([]);
+  const [activeProduct, setActiveProduct] = useState(true);
   const [selectedValue, setSelectedValue] = useState([]);
+  const [textFieldValues, setTextFieldValues] = useState([]);
+  const [updateProductType, setUpdateProductType] = useState([]);
   const [formValues, setFormValues] = useState({
     sizesWithQuantities: textFieldValues,
     nameTm: "",
@@ -73,8 +82,8 @@ const UpdateProduct = () => {
     discount_pricePercent: 0,
     incomePrice: "",
   });
-  const [productImages, setProductImages] = useState([]);
   const [productType, setProductType] = useState(data?.ProductColorDetails);
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const { mode } = useThemeContext();
   const params = useParams();
@@ -83,8 +92,10 @@ const UpdateProduct = () => {
   const categories = useSelector((state) => state.data.data);
   const subCategories = useSelector((state) => state.subcategory.data);
 
-  console.log(productType);
-  console.log(formData);
+  console.log(activeProduct);
+  console.log(selectedValue);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     setProductType(data?.ProductColorDetails);
@@ -105,14 +116,15 @@ const UpdateProduct = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (selectedValue.sizes?.length > 0) {
-      const initialValues = selectedValue.sizes.map((elem) => ({
+    if (selectedValue[0]?.sizes?.length > 0) {
+      const initialValues = selectedValue[0].sizes.map((elem) => ({
         size: elem.name,
-        quantity: 0, // Initially, set quantity as an empty string
+        quantity: 0,
       }));
       setTextFieldValues(initialValues);
     }
-  }, [selectedValue.sizes]);
+  }, [selectedValue[0]?.sizes]);
+  console.log(textFieldValues);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -196,12 +208,13 @@ const UpdateProduct = () => {
     },
   };
   const handleSwitchToggle = (newState) => {
-    console.log("Switch toggled to:", newState);
     setActive(newState);
   };
-
+  const handleSwitchToggleProduct = (newState) => {
+    setActiveProduct(newState);
+  };
   const handleChangeSelectedValue = (event) => {
-    setSelectedValue(event.target.value);
+    setSelectedValue([event.target.value]);
   };
 
   const handleProductTypeInputChange = (field, value) => {
@@ -212,7 +225,7 @@ const UpdateProduct = () => {
   };
 
   const handleTextFieldChange = (sizeName, quantity) => {
-    const parsedQuantity = parseInt(quantity, 10) || 0; // Parse input to a number
+    const parsedQuantity = Number(quantity, 10);
     const updatedTextFieldValues = textFieldValues.map((item) =>
       item.size === sizeName ? { ...item, quantity: parsedQuantity } : item
     );
@@ -222,12 +235,40 @@ const UpdateProduct = () => {
       sizesWithQuantities: updatedTextFieldValues, // Update sizesWithQuantities in formValues
     }));
   };
+
   const style2 = {
+    cursor: "pointer",
     p: 0,
     pl: 2,
     fontFamily: "Montserrat",
     textAlign: "center",
   };
+  console.log(selectedValue);
+  const handleClear = () => {
+    setTextFieldValues([]); // Clear the textFieldValues array
+    setFormValues({
+      sizesWithQuantities: [],
+      nameTm: "",
+      nameRu: "",
+      nameEn: "",
+      descriptionTm: "",
+      descriptionRu: "",
+      descriptionEn: "",
+      sellPrice: "",
+      discount_priceTMT: 0,
+      discount_pricePercent: 0,
+      incomePrice: "",
+    });
+    setSelectedValue([]);
+    setTextFieldValues([]);
+    setImages(Array(5).fill(null));
+    setImagesMin(null);
+    setImageMin(null);
+    setImagesHover(null);
+    setImageHover(null);
+    setProductImages([]);
+  };
+
   const handleNewProductSubmit = () => {
     const checkAllData = (data) => {
       const keysToCheck = [
@@ -237,68 +278,88 @@ const UpdateProduct = () => {
         "nameTm",
         "sellPrice",
       ];
+
+      // Check required fields
       for (let key of keysToCheck) {
-        if (data[key] === null || data[key] === undefined || data[key] === "") {
-          toast.warn(`Maglumatlary doly giriz!`);
-          return false; // If any field is invalid, return false
+        if (!data[key]) {
+          toast.warn(`Maglumatlary doly giriz! (${key} is missing)`);
+          return false;
         }
       }
+
+      // Check sizes and quantities
+      if (
+        !data.sizesWithQuantities.length ||
+        !selectedValue.length ||
+        !selectedValue[0]?.sizes?.length
+      ) {
+        toast.warn(`Razmeri hökman girizmeli!`);
+        return false;
+      }
+
       for (let i = 0; i < data.sizesWithQuantities.length; i++) {
         const size = data.sizesWithQuantities[i];
-
         if (size.size === 0) {
           toast.warn(`Size for entry ${i} is invalid`);
           return false;
         }
 
-        if (
-          size.quantity === null ||
-          size.quantity === undefined ||
-          size.quantity === 0
-        ) {
+        if (!size.quantity || size.quantity === 0) {
           toast.warn(`Haryt sany ${size.size} razmerde ýok`);
-          return false; // If any quantity is invalid
+          return false;
         }
       }
-      if (!data.sizesWithQuantities.length) {
-        toast.warn(`Razmeri hökman girizmeli!`);
+
+      // Check images
+      if (
+        !imagesMin ||
+        !imagesHover ||
+        !images[0] ||
+        !productImages.length ||
+        !imageHover ||
+        !imageMin
+      ) {
+        toast.warn(`Surat goşmaly!`);
         return false;
       }
-      if (imagesMin == null || imagesHover == null || images[0] == null) {
-        toast.warn(`Surat goşmaly!`);
-        return;
-      }
-      toast.success("Üstünlikli!");
-      setProductType((prev) => [...prev, formValues]);
-      setOpenProductType(false);
 
-      return true; // Return true if everything is valid
+      return true; // All checks passed
     };
-    checkAllData(formValues);
-  };
-  const navigate = useNavigate();
-  const handleDelete = (index) => {
-    const filtered = [...productType];
-    filtered.splice(index, 1);
-    setProductType(filtered);
-  };
 
-  const handleSubmit = () => {
-    const productDetail = JSON.stringify(formData);
-    const colorDetail = JSON.stringify(productType);
+    // Validate form data
+    if (!checkAllData(formValues)) {
+      return; // Exit if validation fails
+    }
+
+    const colorDetail = JSON.stringify(formValues);
     const body = new FormData();
-    body.append("productDetail", productDetail);
     body.append("colorDetail", colorDetail);
     body.append("hoverImage", imageHover);
+    body.append("productId", params.id);
+    productImages.forEach((image) => body.append("fullImages", image));
+    body.append("minImage", imageMin);
+    dispatch(createProductColor({ body: body, id: params.id }));
+    handleClear();
+    setOpenProductType(false);
+  };
+
+  const navigate = useNavigate();
+  const handleDelete = (id) => {
+    if (id) {
+      dispatch(deleteProductColor({ body: id, id: params.id }));
+    }
+  };
+
+  const handleSubmitNewColor = () => {
+    const colorDetail = JSON.stringify(productType);
+    const body = new FormData();
+    body.append("colorDetail", colorDetail);
+    body.append("hoverImage", imageHover);
+    body.append("productId", data?.id);
     productImages.forEach((image) => body.append("fullImages", image));
     body.append("minImage", imageMin);
     if (
-      !formData.nameTm ||
-      !formData.nameEn ||
-      !formData.nameRu ||
-      !formData.barcode ||
-      formData.categoryId == null ||
-      formData.subCategoryId == null ||
+      !data?.id ||
       !productType.length ||
       !productImages.length ||
       imageHover == null ||
@@ -307,7 +368,34 @@ const UpdateProduct = () => {
       toast.error("Maglumatlary giriziň!");
       return;
     } else {
-      dispatch(createProduct(body));
+      dispatch(createProductColor({ body: body, id: data?.id }));
+      // navigate("/products");
+    }
+  };
+
+  const handleSubmit = () => {
+    const body = {
+      nameTm: formData.nameTm,
+      nameRu: formData.nameEn,
+      nameEn: formData.nameRu,
+      barcode: formData.barcode,
+      categoryId: formData.categoryId,
+      subCategoryId: formData.subCategoryId,
+      isActive: activeProduct,
+      id: params.id,
+    };
+    if (
+      !formData.nameTm ||
+      !formData.nameEn ||
+      !formData.nameRu ||
+      !formData.barcode ||
+      formData.categoryId == null ||
+      formData.subCategoryId == null
+    ) {
+      toast.error("Maglumatlary giriziň!");
+      return;
+    } else {
+      dispatch(updateProduct(body));
       navigate("/products");
     }
   };
@@ -316,6 +404,13 @@ const UpdateProduct = () => {
   );
   console.log(selectedValueSubcategory);
 
+  const productNavigate = (id) => {
+    navigate(`/products/${params.id}/${id}`);
+  };
+  const handleUpdateProductType = (item) => {
+    setUpdateProductType(item);
+    setOpen(true);
+  };
   return (
     <Box height="100vh" overflow="auto" width="100%" p={1}>
       <Stack direction="row" p="5px 13px" justifyContent="space-between">
@@ -324,8 +419,9 @@ const UpdateProduct = () => {
           fontFamily="Montserrat"
           fontWeight="600"
           sx={mode === "dark" ? { color: "inherit" } : { color: "#474747" }}
+          mb={2}
         >
-          {data?.nameTm}
+          Haryt (Ady) : {data?.nameTm}
         </Typography>
       </Stack>
 
@@ -378,27 +474,34 @@ const UpdateProduct = () => {
             size="small"
             fullWidth
           />
-          <Autocomplete
-            sx={inputStyle}
-            options={categories || []}
-            getOptionLabel={(option) => option.nameTm || ""}
-            onChange={handleCategoryChange}
-            renderInput={(params) => (
-              <TextField {...params} label="Kategoriýa" size="small" />
-            )}
-          />
-          {console.log(subCategories)}
-
-          <Autocomplete
-            sx={inputStyle}
-            options={subCategories || []}
-            defaultValue={selectedValueSubcategory.nameTm}
-            getOptionLabel={(option) => option.nameTm || ""}
-            onChange={handleSubCategoryChange}
-            renderInput={(params) => (
-              <TextField {...params} label="Subkategoriýa" size="small" />
-            )}
-          />
+          <FormControl sx={inputStyle} size="small">
+            <InputLabel>Kategoriýa</InputLabel>
+            <Select
+              value={formData.categoryId || ""} // Controlled value
+              onChange={(event) => handleCategoryChange(event.target.value)}
+              label="Kategoriýa"
+            >
+              {categories?.map((subCategory) => (
+                <MenuItem key={subCategory.id} value={subCategory.id}>
+                  {subCategory.nameTm}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={inputStyle} size="small">
+            <InputLabel>Subkategoriýa</InputLabel>
+            <Select
+              value={formData.subCategoryId || ""} // Controlled value
+              onChange={(event) => handleSubCategoryChange(event.target.value)}
+              label="Subkategoriýa"
+            >
+              {subCategories?.map((subCategory) => (
+                <MenuItem key={subCategory.id} value={subCategory.id}>
+                  {subCategory.nameTm}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Stack>
       </Stack>
       <Divider sx={{ mt: 2, mb: 2, bgcolor: "gray" }} />
@@ -437,105 +540,163 @@ const UpdateProduct = () => {
               Täze haryt görnüşi
             </Button>
           </Stack>
-          <Stack
-            // key={index}
-            direction="row"
-            alignItems="center"
-            spacing={1}
-            border="1px solid gray"
-            borderRadius={3}
-            p={0}
-          >
-            {/* <img
-                src={imagesMin}
-                style={{ width: 60, height: 60, borderRadius: 3 }}
-                alt=""
-              />
-              <Typography>
-                {index + 1}. {item.nameTm}
-              </Typography> */}
-            <TableContainer
-              sx={{
-                ...(mode === "dark"
-                  ? { background: "#0D1117" }
-                  : { background: "#F3F2F7" }),
-                borderRadius: 3,
-              }}
-              component={Paper}
+          {status === "loading" ? (
+            <Stack
+              direction="column"
+              height="60%"
+              alignItems="center"
+              sx={{ gap: "10px", pt: 8 }}
             >
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ ...style2, p: 1 }}>№</TableCell>
-                    <TableCell sx={{ ...style2, p: 1 }}>Surady</TableCell>
-                    <TableCell sx={{ ...style2, p: 1 }}>Ady (TM)</TableCell>
-                    <TableCell sx={{ ...style2, p: 1 }}>Bahasy (TMT)</TableCell>
-                    <TableCell sx={{ ...style2, p: 1 }}>
-                      Arzanladyş (TMT)
-                    </TableCell>
-                    <TableCell sx={{ ...style2, p: 1 }}>Aktiw</TableCell>
-                    <TableCell sx={{ ...style2, p: 1 }}></TableCell>
-                    {/* <TableCell>Hereketler</TableCell> */}
-                  </TableRow>
-                </TableHead>
+              <CircularProgress />
+              Loading...
+            </Stack>
+          ) : status === "failed" ? (
+            error == "Network Error" ? (
+              (toast.error("Internet baglanyşygy ýok"),
+              (
+                <Typography textAlign="center" color="tomato" mt={7}>
+                  Internet baglanyşygy ýok
+                </Typography>
+              ))
+            ) : (
+              (toast.error(error),
+              (
+                <Typography textAlign="center" color="tomato" mt={7}>
+                  {error}
+                </Typography>
+              ))
+            )
+          ) : status === "succeeded" ? (
+            <Box>
+              {data.length === 0 ? (
+                <Typography textAlign="center" mt={7}>
+                  Haryt gornüşi ýok!
+                </Typography>
+              ) : (
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={1}
+                  border="1px solid gray"
+                  borderRadius={3}
+                  p={0}
+                >
+                  <TableContainer
+                    sx={{
+                      ...(mode === "dark"
+                        ? { background: "#0D1117" }
+                        : { background: "#F3F2F7" }),
+                      borderRadius: 3,
+                    }}
+                    component={Paper}
+                  >
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={{ ...style2, p: 1 }}>№</TableCell>
+                          <TableCell sx={{ ...style2, p: 1 }}>Surady</TableCell>
+                          <TableCell sx={{ ...style2, p: 1 }}>
+                            Ady (TM)
+                          </TableCell>
+                          <TableCell sx={{ ...style2, p: 1 }}>
+                            Bahasy (TMT)
+                          </TableCell>
+                          <TableCell sx={{ ...style2, p: 1 }}>
+                            Arzanladyş (TMT)
+                          </TableCell>
+                          <TableCell sx={{ ...style2, p: 1 }}>Aktiw</TableCell>
+                          <TableCell sx={{ ...style2, p: 1 }}></TableCell>
+                          {/* <TableCell>Hereketler</TableCell> */}
+                        </TableRow>
+                      </TableHead>
 
-                <TableBody>
-                  {productType.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={style2}>{index + 1}</TableCell>
-                      <TableCell sx={style2}>
-                        <img
-                          src={`${BASE_URL_Img}/images/${item.minImage}`}
-                          alt="image of product"
-                          style={{
-                            maxWidth: "50px",
-                            maxHeight: "50px",
-                            objectFit: "contain",
-                          }}
-                          crossOrigin="anonymous"
-                        />
-                      </TableCell>
-                      <TableCell sx={style2}>{item.nameTm}</TableCell>
-                      <TableCell sx={style2}>{item.sellPrice}</TableCell>
-                      <TableCell sx={style2}>
-                        {item.discount_priceTMT}
-                      </TableCell>
-                      <TableCell sx={style2}>
-                        {active ? "Hawa" : "Ýok"}
-                      </TableCell>
-                      <TableCell sx={style2}>
-                        <IconButton
-                          onClick={() => {
-                            handleOpenUpdateitem(item);
-                            setId(item.id);
-                          }}
-                          sx={{ backgroundColor: "inherit", color: "#fff" }}
-                        >
-                          <CreateIcon
-                            sx={{
-                              color: "#00B69B",
-                              width: 25,
-                              height: 25,
-                            }}
-                          />
-                        </IconButton>
-                        <IconButton
-                          onClick={() => handleDelete(index)}
-                          sx={{ backgroundColor: "inherit", color: "#fff" }}
-                        >
-                          <img
-                            style={{ width: 25, height: 25 }}
-                            src="/images/Delete.png"
-                            alt=""
-                          />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Stack>
+                      <TableBody>
+                        {productType.map((item, index) => (
+                          <TableRow key={index}>
+                            <TableCell
+                              onClick={() => handleUpdateProductType(item)}
+                              sx={style2}
+                            >
+                              {index + 1}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleUpdateProductType(item)}
+                              sx={style2}
+                            >
+                              <img
+                                src={`${BASE_URL_Img}/images/${item.minImage}`}
+                                alt="image of product"
+                                style={{
+                                  maxWidth: "50px",
+                                  maxHeight: "50px",
+                                  objectFit: "contain",
+                                }}
+                                crossOrigin="anonymous"
+                              />
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleUpdateProductType(item)}
+                              sx={style2}
+                            >
+                              {item.nameTm}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleUpdateProductType(item)}
+                              sx={style2}
+                            >
+                              {item.sellPrice}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleUpdateProductType(item)}
+                              sx={style2}
+                            >
+                              {item.discount_priceTMT}
+                            </TableCell>
+                            <TableCell
+                              onClick={() => handleUpdateProductType(item)}
+                              sx={style2}
+                            >
+                              {active ? "Hawa" : "Ýok"}
+                            </TableCell>
+                            <TableCell sx={style2}>
+                              <IconButton
+                                onClick={() => handleUpdateProductType(item)}
+                                sx={{
+                                  backgroundColor: "inherit",
+                                  color: "#fff",
+                                }}
+                              >
+                                <CreateIcon
+                                  sx={{
+                                    color: "#00B69B",
+                                    width: 25,
+                                    height: 25,
+                                  }}
+                                />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => handleDelete(item.id)}
+                                sx={{
+                                  backgroundColor: "inherit",
+                                  color: "#fff",
+                                }}
+                              >
+                                <img
+                                  style={{ width: 25, height: 25 }}
+                                  src="/images/Delete.png"
+                                  alt=""
+                                />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Stack>
+              )}
+            </Box>
+          ) : null}
         </Stack>
       ) : (
         <Stack
@@ -573,7 +734,11 @@ const UpdateProduct = () => {
           </Button>
         </Stack>
       )}
-
+      <ProductTypeUpdate
+        open={open}
+        handleClose={handleClose}
+        data={updateProductType}
+      />
       <Stack mt={1} width="100%" alignItems={"end"}>
         <Stack direction="row" spacing={1}>
           {openProductType && (
@@ -635,7 +800,7 @@ const UpdateProduct = () => {
                   </InputLabel>
                   <Select
                     labelId="select-label"
-                    value={selectedValue}
+                    value={selectedValue[0]}
                     onChange={handleChangeSelectedValue}
                     label="Razmer hataryny saýlaň"
                     // size="small"
@@ -663,10 +828,10 @@ const UpdateProduct = () => {
                 </FormControl>
               </Stack>
               <Stack width="100%" direction="row" gap={1} flexWrap="wrap">
-                {selectedValue.sizes?.length == 0 ? (
+                {selectedValue[0]?.sizes?.length == 0 ? (
                   <Typography>Razmer ýok</Typography>
                 ) : (
-                  selectedValue.sizes?.map((elem) => (
+                  selectedValue[0]?.sizes?.map((elem) => (
                     <Stack
                       key={elem.id}
                       direction="row"
@@ -680,7 +845,7 @@ const UpdateProduct = () => {
                         value={
                           textFieldValues.find(
                             (item) => item.size === elem.name
-                          )?.quantity || ""
+                          )?.quantity ?? 0
                         }
                         onChange={(e) =>
                           handleTextFieldChange(elem.name, e.target.value)
@@ -734,8 +899,8 @@ const UpdateProduct = () => {
                       fontSize: 16,
                       mt: 2,
                     }}
-                    // onClick={handleNewProductSubmit}
                     onClick={handleNewProductSubmit}
+                    // onClick={handleSubmitNewColor}
                   >
                     {/* <LuPackagePlus /> */}
                     <LuPackagePlus
@@ -751,29 +916,42 @@ const UpdateProduct = () => {
         )}
       </Stack>
       {openProductType == false && productType ? (
-        <Stack alignItems="end" mt={10}>
-          <Button
-            variant="contained"
-            sx={{
-              textTransform: "revert",
-              width: "20%",
-              height: 40,
-              color: "#fff",
-              bgcolor: "#00B69B",
-              "&:hover": { bgcolor: "#00B69B" },
-              fontWeight: 500,
-              fontFamily: "Montserrat",
-              fontSize: 16,
-              mt: 2,
-            }}
-            // onClick={handleNewProductSubmit}
-            onClick={handleSubmit}
-          >
-            {/* <LuPackagePlus /> */}
-            <SaveIcon style={{ width: 30, height: 30, marginRight: 8 }} />
-            {/* Goşmak */}
-            Ýatda sakla
-          </Button>
+        <Stack
+          alignItems="center"
+          justifyContent="flex-end"
+          direction="row"
+          width="100%"
+          mt={2}
+        >
+          <Stack direction="row" width="40%" spacing={2}>
+            <ProductSwitchComponent
+              data={data}
+              onChange={handleSwitchToggleProduct}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                textTransform: "revert",
+                width: "100%",
+                height: 50,
+                color: "#fff",
+                bgcolor: "#00B69B",
+                "&:hover": { bgcolor: "#00B69B" },
+                fontWeight: 500,
+                fontFamily: "Montserrat",
+                fontSize: 16,
+                mt: 1,
+                borderRadius: 2,
+              }}
+              // onClick={handleNewProductSubmit}
+              onClick={handleSubmit}
+            >
+              {/* <LuPackagePlus /> */}
+              <SaveIcon style={{ width: 30, height: 30, marginRight: 8 }} />
+              {/* Goşmak */}
+              Ýatda sakla
+            </Button>
+          </Stack>
         </Stack>
       ) : (
         ""
