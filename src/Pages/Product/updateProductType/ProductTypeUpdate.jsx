@@ -50,12 +50,15 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
     sizeTableId: null,
   });
   const [selectedValue, setSelectedValue] = useState([formValues.sizeTableId]);
+  const [selectedSize, setSelectedSize] = useState(data?.sizesWithQuantities);
   const params = useParams();
   const dispatch = useDispatch();
   const sizeTable = useSelector((es) => es.size.data);
   const sizeTableStatus = useSelector((es) => es.size.status);
   const { mode } = useThemeContext();
+  console.log(selectedSize);
   console.log(data);
+  console.log(textFieldValues);
 
   const handleProductTypeInputChange = (field, value) => {
     setFormValues((prevValues) => ({
@@ -66,10 +69,7 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
   useEffect(() => {
     if (data) {
       setFormValues({
-        sizesWithQuantities: selectedValue[0]?.sizes?.map((elem) => ({
-          size: elem.name,
-          quantity: 0,
-        })),
+        sizesWithQuantities: data.sizesWithQuantities,
         nameTm: data.nameTm,
         nameRu: data.nameRu,
         nameEn: data.nameEn,
@@ -82,6 +82,8 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
         incomePrice: data.incomePrice,
         sizeTableId: data.sizeTableId,
       });
+      setSelectedSize(data.sizesWithQuantities);
+      setTextFieldValues(data.sizesWithQuantities);
       setSelectedValue([data.sizeTableId]);
       setImages(
         data.fullImages
@@ -91,10 +93,22 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
             ]
           : Array(6).fill(null)
       );
+      data.fullImages;
+      // ? [
+      //     ...data.fullImages,
+      //     ...Array(6 - data.fullImages.length).fill(null),
+      //   ]
+      // : Array(6).fill(null)
       setImagesMin(data.minImage);
+      setImageMin(data.minImage);
       setImagesHover(data.hoverImage);
+      setImageHover(data.hoverImage);
     }
   }, [data]);
+  console.log(productImages);
+  console.log(imageMin);
+  console.log(imageHover);
+
   useEffect(() => {
     if (data?.sizesWithQuantities?.length > 0) {
       const initialValues = data?.sizesWithQuantities?.map((elem) => ({
@@ -115,13 +129,13 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
   }, [selectedValue[0]?.sizes]);
   console.log(selectedValue);
 
-  const handleChangeSelectedValue = (event) => {
-    setSelectedValue([event.target.value]);
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      sizeTableId: event.target.value?.id,
-    }));
-  };
+  // const handleChangeSelectedValue = (event) => {
+  //   setSelectedValue([event.target.value]);
+  //   setFormValues((prevValues) => ({
+  //     ...prevValues,
+  //     sizeTableId: event.target.value?.id,
+  //   }));
+  // };
   console.log(textFieldValues);
   const inputsStyle2 = {
     "& .MuiOutlinedInput-root": {
@@ -144,17 +158,17 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
       },
     },
   };
-  const handleTextFieldChange = (sizeName, quantity) => {
-    const parsedQuantity = Number(quantity, 10);
-    const updatedTextFieldValues = textFieldValues.map((item) =>
-      item.size === sizeName ? { ...item, quantity: parsedQuantity } : item
-    );
-    setTextFieldValues(updatedTextFieldValues);
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      sizesWithQuantities: updatedTextFieldValues, // Update sizesWithQuantities in formValues
-    }));
-  };
+  // const handleTextFieldChange = (sizeName, quantity) => {
+  //   const parsedQuantity = Number(quantity, 10);
+  //   const updatedTextFieldValues = textFieldValues.map((item) =>
+  //     item.size === sizeName ? { ...item, quantity: parsedQuantity } : item
+  //   );
+  //   setTextFieldValues(updatedTextFieldValues);
+  //   setFormValues((prevValues) => ({
+  //     ...prevValues,
+  //     sizesWithQuantities: updatedTextFieldValues, // Update sizesWithQuantities in formValues
+  //   }));
+  // };
   const handleFileChange = (event, index) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -202,8 +216,9 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
       // Check sizes and quantities
       if (
         !data.sizesWithQuantities?.length ||
-        !selectedValue.length ||
-        !selectedValue[0]?.sizes?.length
+        // !selectedValue.length ||
+        // !selectedValue[0]?.sizes?.length
+        !data.sizeTableId
       ) {
         toast.warn(`Razmeri hökman girizmeli!`);
         return false;
@@ -255,8 +270,43 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
     handleClose();
   };
 
-  console.log(formValues);
+  console.log(selectedValue);
 
+  const handleChangeSelectedValue = (event) => {
+    const selectedId = event.target.value;
+    const selectedSizeTable = sizeTable.find((item) => item.id === selectedId);
+
+    setSelectedValue([selectedSizeTable]);
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      sizeTableId: selectedId,
+    }));
+
+    // Initialize textFieldValues based on the selected size table
+    if (selectedSizeTable?.sizes?.length > 0) {
+      const initialSizes = selectedSizeTable.sizes.map((size) => ({
+        size: size.name,
+        quantity: 0,
+      }));
+      setTextFieldValues(initialSizes);
+      setFormValues((prev) => ({
+        ...prev,
+        sizesWithQuantities: initialSizes,
+      }));
+    }
+  };
+
+  // Handle updates to the TextField components
+  const handleTextFieldChange = (sizeName, quantity) => {
+    const updatedValues = textFieldValues.map((item) =>
+      item.size === sizeName ? { ...item, quantity: Number(quantity) } : item
+    );
+    setTextFieldValues(updatedValues);
+    setFormValues((prev) => ({
+      ...prev,
+      sizesWithQuantities: updatedValues,
+    }));
+  };
   return (
     <Modal
       open={open}
@@ -322,7 +372,7 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
             mb={2}
           >
             <Stack width={"25%"} m={1}>
-              <FormControl>
+              {/* <FormControl>
                 <InputLabel id="select-label" sx={{ height: 40, mb: 2 }}>
                   Razmer hataryny saýlaň
                 </InputLabel>
@@ -358,10 +408,25 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
                     <MenuItem disabled>Loading...</MenuItem>
                   )}
                 </Select>
+              </FormControl> */}
+              <FormControl fullWidth>
+                <InputLabel>Razmer hataryny saýlaň</InputLabel>
+                <Select
+                  value={formValues.sizeTableId || ""}
+                  onChange={handleChangeSelectedValue}
+                  label="Razmer hataryny saýl"
+                  sx={inputsStyle2}
+                >
+                  {sizeTable.map((size) => (
+                    <MenuItem key={size.id} value={size.id}>
+                      {size.name}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
             </Stack>
             {console.log(textFieldValues)}
-            <Stack width="100%" direction="row" gap={1} flexWrap="wrap">
+            {/* <Stack width="100%" direction="row" gap={1} flexWrap="wrap">
               {selectedValue[0]?.sizes?.length == 0 ? (
                 <Typography>Razmer ýok</Typography>
               ) : (
@@ -390,6 +455,61 @@ const ProductTypeUpdate = ({ open, handleClose, data }) => {
                   </Stack>
                 ))
               )}
+            </Stack> */}
+            {/* <Stack width="100%" direction="row" gap={1} flexWrap="wrap">
+              {!formValues?.sizesWithQuantities?.length ? (
+                <Typography>Razmer ýok</Typography>
+              ) : (
+                formValues?.sizesWithQuantities?.map((elem) => (
+                  <Stack
+                    key={elem.id}
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
+                    <Typography>{elem.size}</Typography>
+                    {console.log(textFieldValues)
+                    }
+                    <TextField
+                      autoComplete="off"
+                      label="Haryt sany"
+                      value={
+                        textFieldValues.find((item) => item.size === elem.size)
+                          ?elem.quantity :0
+                      }
+                      onChange={(e) =>
+                        handleTextFieldChange(elem.name, e.target.value)
+                      }
+                      size="small"
+                      fullWidth
+                      sx={inputsStyle2}
+                    />
+                  </Stack>
+                ))
+              )}
+            </Stack> */}
+            <Stack width="100%" direction="row" gap={1} flexWrap="wrap">
+              {textFieldValues &&
+                textFieldValues.map((item, index) => (
+                  <Stack
+                    key={index}
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                  >
+                    <Typography>{item.size}</Typography>
+                    <TextField
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        handleTextFieldChange(item.size, e.target.value)
+                      }
+                      sx={inputsStyle2}
+                      size="small"
+                      fullWidth
+                    />
+                  </Stack>
+                ))}
             </Stack>
           </Stack>
 
